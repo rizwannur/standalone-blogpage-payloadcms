@@ -1,6 +1,16 @@
-# Payload Blank Template
+# Rafey Blog - Payload CMS Project
 
-This template comes configured with the bare minimum to get started on anything you need.
+This is a modern blog built with Payload CMS, Next.js, and Tailwind CSS. The project is actively being developed with plans to add extensive Payload CMS functionality including:
+
+- **Advanced Content Management**: Rich blog post creation with custom fields, categories, and tags
+- **Media Management**: Sophisticated image handling with automatic optimization and responsive variants
+- **User Management**: Multi-role authentication system for authors, editors, and administrators
+- **SEO Optimization**: Built-in meta fields, sitemap generation, and social media integration
+- **Custom Collections**: Specialized content types for portfolios, testimonials, and project showcases
+- **API Integration**: RESTful and GraphQL APIs for headless content delivery
+- **Advanced Features**: Search functionality, commenting system, newsletter integration, and analytics
+
+Currently configured with the foundational setup and planning to expand with comprehensive CMS capabilities.
 
 ## Quick start
 
