@@ -1,0 +1,74 @@
+# .cursorrules: Rafey Blog Project Intelligence
+
+This file serves as a learning journal and a set of guidelines for working on the Rafey Blog project. It captures important patterns, preferences, project-specific intelligence, and tool usage notes to ensure consistency and efficiency.
+
+## 1. Core Project Structure & Conventions
+
+*   **Monorepo**: The project combines Payload CMS (backend) and Next.js (frontend) in a single repository.
+    *   Payload Admin: `src/app/(payload)/admin/`
+    *   Payload API: `src/app/(payload)/api/`
+    *   Frontend: `src/app/(frontend)/`
+*   **Payload Configuration**: All Payload collections, globals, fields, hooks, and plugins are defined as TypeScript configurations within the `src/client/` directory.
+    *   Collections: `src/client/collections/`
+    *   Globals: `src/client/globals/`
+    *   Blocks: `src/client/blocks/`
+    *   Components (shared or Payload-specific UI): `src/client/components/`
+*   **Next.js App Router**: The frontend uses the Next.js App Router. Pay close attention to Server Components vs. Client Components (`'use client'`).
+*   **Styling**: Tailwind CSS is the primary styling solution. Use utility classes directly in JSX. Shared UI components are often found in `src/components/ui/` (e.g., `Button.tsx`, `Card.tsx`).
+*   **TypeScript**: The entire project uses TypeScript. Ensure type safety and leverage auto-generated types from Payload (`src/payload-types.ts`).
+
+## 2. Common Tasks & Patterns
+
+### Creating New Payload Collections/Globals:
+1.  Define the configuration file in the respective directory (e.g., `src/client/collections/NewCollection.ts`).
+2.  Import and add it to the `collections` or `globals` array in `src/payload.config.ts`.
+3.  Restart the development server if it doesn't auto-update schema changes.
+4.  Access the new collection/global in the Payload admin panel to manage content.
+
+### Creating New Frontend Pages (Next.js):
+1.  Create a new `page.tsx` (or a folder with `page.tsx`) within `src/app/(frontend)/`.
+2.  If data fetching from Payload is needed, use `async` components (Server Components) and fetch data directly from Payload API endpoints (e.g., `http://localhost:3000/api/posts`).
+3.  If client-side interactivity is required, use `'use client'` at the top of the file.
+4.  Render content using React components, styled with Tailwind CSS.
+
+### Modifying `not-found.tsx`:
+*   This file (`src/app/(frontend)/not-found.tsx`) **MUST** have `'use client'` at the very top if it uses any client-side hooks (e.g., `useRouter`) or event handlers (`onClick`).
+*   It's a common point of error if the directive is missing or misplaced.
+
+### Working with Payload Blocks:
+*   Blocks are defined in `src/client/blocks/`.
+*   They are typically used within a `blocks` field in a Payload collection (e.g., for flexible page content).
+*   Frontend rendering for these blocks will require specific components that map to each block type and render its fields accordingly. A common pattern is a `BlockRenderer` component that iterates through an array of blocks and dynamically renders the correct component for each.
+
+## 3. Tool Usage & Preferences
+
+*   **Memory Bank**: Always consult and update the `memory-bank/` files. This is critical for maintaining context across sessions.
+    *   `projectbrief.md`: Overall goals.
+    *   `productContext.md`: Why and how.
+    *   `techContext.md`: Technologies used.
+    *   `systemPatterns.md`: Architecture and design.
+    *   `activeContext.md`: Current focus and next steps.
+    *   `progress.md`: What's done, what's left.
+    *   `fileRelations.md`: How files and functions connect.
+*   **File Modifications**: 
+    *   Prefer `update_file` for targeted changes to existing files.
+    *   Use `write_to_file` with `rewrite: false` for creating new files, and `rewrite: true` for complete overwrites of small files if absolutely necessary (and after verifying the file's current state).
+    *   Use `edit_file_fast_apply` for small, precise edits, remembering the `// ... existing code ...` placeholder.
+*   **Viewing Files**: Use `view_files` to inspect file contents before making changes, especially if unsure about the current state or structure.
+*   **Command Execution**: Use `run_command` for tasks like starting the dev server (`pnpm dev`). Set `blocking: false` for long-running processes like the dev server.
+*   **Error Checking**: Use `check_command_status` to monitor output from non-blocking commands, especially to check for compilation errors after code changes.
+
+## 4. Known Challenges & Reminders
+
+*   **`'use client'` Directive**: A frequent source of issues in Next.js App Router. Ensure it's at the very top of files that need it.
+*   **Payload Schema Changes**: Sometimes the dev server might need a manual restart for Payload schema changes (new collections, fields) to be fully reflected in the admin UI or API.
+*   **Data Fetching in Next.js**: Distinguish between data fetching in Server Components (direct, async) and Client Components (useEffect, SWR, React Query, etc.). For this project, initial data loads for pages should primarily happen in Server Components.
+*   **Tailwind CSS Purging**: Ensure class names are not dynamically constructed in a way that Tailwind's JIT compiler cannot detect them for production builds.
+
+## 5. User Preferences & Workflow
+
+*   The user is focused on converting this template into a full-stack blog application.
+*   Emphasis on clear documentation (Memory Bank) due to the nature of the assistant's memory.
+*   Iterative development: Fix issues, document, then move to the next feature/task.
+
+*(This file will be updated as more patterns and preferences emerge during the project.)*
