@@ -5,16 +5,23 @@ import { cn } from '@/lib/utils'
 import { ThemeProvider } from '@/app/(frontend)/components/theme-provider'
 import { Header } from '@/app/(frontend)/components/layout/header'
 import { Footer } from '@/app/(frontend)/components/layout/footer'
+import { getCachedGlobal } from '@/client/utilities/getGlobals'
+import type { Header as HeaderType, Footer as FooterType } from '@/payload-types'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'UI Surgeon - Design Better User Interfaces',
+  title: 'Rizwan Nur - Blog',
   description:
     'Discover practical tools, insights, and resources to help you create exceptional user experiences that users love.',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [header, footer] = await Promise.all([
+    getCachedGlobal('header', 1)() as Promise<HeaderType>,
+    getCachedGlobal('footer', 1)() as Promise<FooterType>,
+  ])
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'antialiased')}>
@@ -25,9 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <div className="relative flex min-h-screen flex-col">
-            <Header />
+            <Header header={header} />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <Footer footer={footer} />
           </div>
         </ThemeProvider>
       </body>

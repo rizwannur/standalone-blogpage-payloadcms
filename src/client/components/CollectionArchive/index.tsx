@@ -1,14 +1,15 @@
-import { cn } from '@/client/utilities/ui'
 import React from 'react'
+import { cn } from '@/client/utilities/ui'
 
 import { Card, CardPostData } from '@/client/components/Card'
 
 export type Props = {
   posts: CardPostData[]
+  relationTo?: string
 }
 
 export const CollectionArchive: React.FC<Props> = (props) => {
-  const { posts } = props
+  const { posts, relationTo } = props
 
   return (
     <div className={cn('container')}>

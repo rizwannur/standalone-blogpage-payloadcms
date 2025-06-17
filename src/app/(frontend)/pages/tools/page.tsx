@@ -2,6 +2,8 @@ import * as React from 'react'
 import { Palette, Code, Zap, Smartphone, Monitor, Layers, Search } from 'lucide-react'
 
 import { Button } from '@/app/(frontend)/components/ui/button'
+import { Input } from '@/app/(frontend)/components/ui/input'
+import { Badge } from '@/app/(frontend)/components/ui/badge'
 import {
   Card,
   CardContent,
@@ -109,12 +111,12 @@ export default function ToolsPage() {
         {/* Search */}
         <div className="relative max-w-md mx-auto mb-6">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             placeholder="Search tools..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            className="pl-10"
           />
         </div>
 
@@ -143,13 +145,13 @@ export default function ToolsPage() {
               className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-blue-200 dark:hover:border-blue-800"
             >
               <CardHeader>
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
-                    <Icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                      <Icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                    </div>
                   </div>
-                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                    {tool.category}
-                  </span>
+                  <Badge variant="secondary">{tool.category}</Badge>
                 </div>
                 <CardTitle className="group-hover:text-blue-600 transition-colors">
                   {tool.title}

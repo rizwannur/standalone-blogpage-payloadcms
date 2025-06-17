@@ -3,8 +3,10 @@ import Link from 'next/link'
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react'
 
 import { Logo } from '@/app/(frontend)/components/ui/logo'
+import type { Footer as FooterType } from '@/payload-types'
 
-const footerLinks = {
+// Default footer links fallback
+const defaultFooterLinks = {
   product: [
     { name: 'Tools', href: '/tools' },
     { name: 'Posts', href: '/posts' },
@@ -25,7 +27,15 @@ const footerLinks = {
   ],
 }
 
-export function Footer() {
+interface FooterProps {
+  footer?: FooterType
+}
+
+export function Footer({ footer }: FooterProps) {
+  // Use footer data from Payload or fallback to default links
+  const navigation = footer?.navItems?.length ? footer.navItems : []
+  const footerLinks = defaultFooterLinks // Keep using default for now, can be enhanced later
+
   return (
     <footer className="border-t bg-background">
       <div className="container py-12">
@@ -55,6 +65,31 @@ export function Footer() {
               })}
             </div>
           </div>
+
+          {/* Dynamic Navigation from Payload */}
+          {navigation.length > 0 && (
+            <div>
+              <h3 className="font-semibold mb-4">Navigation</h3>
+              <ul className="space-y-2">
+                {navigation.map((item, index) => {
+                  const href = item.type === 'reference' && item.reference?.value 
+                    ? `/${item.reference.relationTo}/${item.reference.value.slug}`
+                    : item.url || '/'
+                  
+                  return (
+                    <li key={index}>
+                      <Link
+                        href={href}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )}
 
           {/* Product links */}
           <div>

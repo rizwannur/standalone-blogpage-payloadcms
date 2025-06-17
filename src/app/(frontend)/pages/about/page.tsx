@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Mail, Twitter, Github, Linkedin, Award, Users, BookOpen, Coffee } from 'lucide-react'
 
 import { Button } from '@/app/(frontend)/components/ui/button'
+import { Badge } from '@/app/(frontend)/components/ui/badge'
 import { Card, CardContent } from '@/app/(frontend)/components/ui/card'
 
 const stats = [
@@ -156,12 +157,9 @@ export default function AboutPage() {
           <h3 className="text-xl font-semibold mb-4">Skills & Expertise</h3>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-full text-sm"
-              >
+              <Badge key={index} variant="secondary">
                 {skill}
-              </span>
+              </Badge>
             ))}
           </div>
         </div>

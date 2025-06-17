@@ -2,7 +2,13 @@
 
 ## 1. Current Work Focus
 
-The primary focus is on **transforming the existing Payload CMS + Next.js project into a fully functional, modern full-stack blog application.** This involves:
+The primary focus is on **performing a super detailed update of the entire Memory Bank.** This involves:
+
+*   Sequentially reviewing each Memory Bank file (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`, `fileRelations.md`).
+*   Ensuring each file accurately reflects the current understanding of the project, its goals, and its technical state.
+*   Identifying any inconsistencies, outdated information, or areas needing more detail.
+*   Updating the files to be as comprehensive and accurate as possible, following the principles of the Memory Bank system.
+*   This task itself will be documented within `activeContext.md` and `progress.md`.
 
 *   Reviewing and understanding the current project structure and capabilities.
 *   Identifying areas for modification and enhancement to meet blog-specific requirements.
@@ -12,37 +18,28 @@ The primary focus is on **transforming the existing Payload CMS + Next.js projec
 
 ## 2. Recent Changes & Discoveries
 
-*   **`not-found.tsx` Page Resolution**: Addressed issues with the custom 404 page:
-    *   Ensured the `'use client'` directive is correctly placed at the very top of the `not-found.tsx` file, as it contains client-side interactivity (e.g., `onClick` handlers, `Link` components from Next.js).
-    *   Verified that the page compiles and displays correctly when a non-existent URL is accessed.
-    *   This involved deleting a potentially corrupted version of the file and recreating it with the correct structure and client directive.
-*   **Memory Bank Creation**: Initiated the creation of this Memory Bank to document the project's state, goals, and technical details to aid in the development process.
-*   **Initial Project Assessment**: Gained a foundational understanding of the project's setup, including its use of Payload CMS, Next.js, Tailwind CSS, and various Payload plugins.
+*   **Memory Bank Review**: Completed a full review of all existing Memory Bank files as the first step of the "update memory bank" task.
+*   **Previous `not-found.tsx` Page Resolution**: Addressed issues with the custom 404 page.
+*   **Initial Memory Bank Creation**: The Memory Bank was previously initiated.
 
-## 3. Next Steps (High-Level for Blog Conversion)
+## 3. Next Steps (Sequential Memory Bank Update)
 
-1.  **Define Core Blog Functionality & Content Models**: 
-    *   Solidify the structure for `Posts` (e.g., ensuring fields for title, slug, author, publication date, featured image, categories, tags, main content).
-    *   Review `Categories` and potentially `Tags` collections.
-    *   Consider if an `Authors` collection is needed or if user data from the `Users` collection suffices.
-2.  **Develop Frontend Blog Pages (Next.js)**:
-    *   **Homepage**: Display a list of recent blog posts, potentially with featured content.
-    *   **Blog Index Page**: A paginated list of all blog posts.
-    *   **Individual Post Page (`[slug].tsx`)**: Display full content of a single blog post.
-    *   **Category/Tag Archive Pages**: Display posts filtered by a specific category or tag.
-    *   **Author Pages (Optional)**: Display posts by a specific author.
-3.  **Implement Data Fetching Logic**: Write functions/logic in Next.js pages/components to fetch data from Payload CMS APIs (e.g., fetching posts, categories).
-4.  **Refine UI/UX**: Apply styling using Tailwind CSS to create a visually appealing and user-friendly blog interface.
-5.  **Integrate Existing Blocks/Components**: Leverage existing Payload blocks (e.g., `ContentBlock`, `MediaBlock`, `CodeBlock`) for rich post content and ensure they render correctly on the frontend.
-6.  **SEO Enhancements**: Ensure proper meta tags, structured data, and sitemap generation (leveraging `@payloadcms/plugin-seo`).
-7.  **Testing**: Test all functionalities across different devices and browsers.
+1.  **`projectbrief.md` Update**: Review and enhance for clarity, completeness, and accuracy regarding project goals and scope.
+2.  **`productContext.md` Update**: Review and detail the problem, solution, and UX goals with any new insights.
+3.  **`systemPatterns.md` Update**: Verify architecture diagrams, technical decisions, and data flow descriptions. Add more detail where necessary, especially regarding component interactions.
+4.  **`techContext.md` Update**: Confirm versions of core technologies and libraries. Ensure project structure and setup instructions are current.
+5.  **`activeContext.md` Update (Self-reflection)**: Ensure this file accurately reflects the *current* detailed update process itself.
+6.  **`progress.md` Update**: Document the progress of this detailed memory bank update. Ensure "What Works" and "What's Left to Build" are accurate from a project-wide perspective, beyond just this update task.
+7.  **`fileRelations.md` Update**: Meticulously review and expand on file and function relationships. Add any newly identified interactions or clarify existing ones. This is a critical step for deep understanding.
+8.  **`.cursorrules` Review/Update**: Consider if any new patterns or insights have emerged during this detailed review that should be captured in `.cursorrules`.
+9.  **Final Review**: Once all individual files are updated, perform a final holistic review of the entire Memory Bank for consistency and completeness.
 
-## 4. Active Decisions & Considerations
+## 4. Active Decisions & Considerations (for Memory Bank Update)
 
-*   **Content Modeling Strategy**: How detailed should the content models be? What custom fields are essential for blog posts beyond standard ones?
-*   **Frontend State Management**: For complex interactive features, will simple React context/hooks suffice, or is a more robust state management library needed?
-*   **Image Optimization**: How will images be optimized for performance (Payload's built-in capabilities, Next.js Image component)?
-*   **Deployment Strategy**: While `README.md` mentions Docker, further consideration for a production deployment environment (e.g., Vercel for Next.js, a managed MongoDB service).
-*   **Prioritization**: Which blog features are MVP (Minimum Viable Product) and which can be deferred?
+*   **Level of Detail**: Strive for maximum useful detail in each file without being overly verbose or redundant. The goal is comprehensive understanding after a memory reset.
+*   **Accuracy**: Ensure all information is factually correct based on the current project state and known plans.
+*   **Clarity**: Use clear, concise language. Diagrams in `systemPatterns.md` should be easy to understand.
+*   **Consistency**: Ensure terminology and descriptions are consistent across all Memory Bank files.
+*   **Actionability**: The Memory Bank should provide a clear path forward for future development tasks.
 
 This document will be updated as the project progresses and new decisions are made or context shifts.

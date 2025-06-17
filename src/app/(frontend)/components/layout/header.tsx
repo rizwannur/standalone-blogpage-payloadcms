@@ -8,17 +8,25 @@ import { Menu, X } from 'lucide-react'
 import { Button } from '@/app/(frontend)/components/ui/button'
 import { ThemeToggle } from '@/app/(frontend)/components/theme-toggle'
 import { Logo } from '@/app/(frontend)/components/ui/logo'
+import type { Header as HeaderType } from '@/payload-types'
 
-const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'Tools', href: '/tools' },
-  { name: 'Posts', href: '/posts' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' },
+// Default navigation fallback
+const defaultNavigation = [
+  { label: 'Home', url: '/', type: 'reference' as const },
+  { label: 'Posts', url: '/posts', type: 'reference' as const },
+  { label: 'About', url: '/about', type: 'reference' as const },
+  { label: 'Contact', url: '/contact', type: 'reference' as const },
 ]
 
-export function Header() {
+interface HeaderProps {
+  header?: HeaderType
+}
+
+export function Header({ header }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+  // Use header data from Payload or fallback to default navigation
+  const navigation = header?.navItems?.length ? header.navItems : defaultNavigation
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -30,15 +38,21 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navigation.map((item, index) => {
+            const href = item.type === 'reference' && item.reference?.value 
+              ? `/${item.reference.relationTo}/${item.reference.value.slug}`
+              : item.url || '/'
+            
+            return (
+              <Link
+                key={index}
+                href={href}
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
 
         {/* Right side actions */}
@@ -65,16 +79,22 @@ export function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t bg-background">
           <nav className="container py-4 space-y-3">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block py-2 text-sm font-medium transition-colors hover:text-foreground/80 text-foreground/60"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {navigation.map((item, index) => {
+              const href = item.type === 'reference' && item.reference?.value 
+                ? `/${item.reference.relationTo}/${item.reference.value.slug}`
+                : item.url || '/'
+              
+              return (
+                <Link
+                  key={index}
+                  href={href}
+                  className="block py-2 text-sm font-medium transition-colors hover:text-foreground/80 text-foreground/60"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
             <div className="pt-2">
               <Button asChild className="w-full">
                 <Link href="/login">Join Us</Link>

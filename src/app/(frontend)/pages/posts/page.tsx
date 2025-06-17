@@ -1,108 +1,45 @@
-import * as React from 'react'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowRight, Search } from 'lucide-react'
+import { ArrowRight, Search } from 'lucide-react'
+import { Button } from '@/client/components/ui/button'
+import { Input } from '@/client/components/ui/input'
+import { getPosts, getCategories } from '@/lib/payload'
+import { CollectionArchive } from '@/client/components/CollectionArchive'
 
-import { Button } from '@/app/(frontend)/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/app/(frontend)/components/ui/card'
+interface PostsPageProps {
+  searchParams: {
+    page?: string
+    category?: string
+    search?: string
+  }
+}
 
-// Mock data - replace with actual data from your backend
-const allPosts = [
-  {
-    id: 1,
-    title: '10 Essential UI Design Principles Every Designer Should Know',
-    description:
-      'Learn the fundamental principles that make great user interfaces, from visual hierarchy to consistency and beyond.',
-    date: '2024-01-15',
-    readTime: '8 min read',
-    category: 'Design',
-    author: 'UI Surgeon',
-    slug: 'ui-design-principles',
-    featured: true,
-  },
-  {
-    id: 2,
-    title: 'Building Accessible Components with React and TypeScript',
-    description:
-      'A comprehensive guide to creating inclusive user interfaces that work for everyone, with practical examples.',
-    date: '2024-01-12',
-    readTime: '12 min read',
-    category: 'Development',
-    author: 'UI Surgeon',
-    slug: 'accessible-react-components',
-    featured: true,
-  },
-  {
-    id: 3,
-    title: 'The Complete Guide to Design Systems in 2024',
-    description:
-      'Everything you need to know about creating, maintaining, and scaling design systems for modern applications.',
-    date: '2024-01-10',
-    readTime: '15 min read',
-    category: 'Design Systems',
-    author: 'UI Surgeon',
-    slug: 'design-systems-guide',
-    featured: true,
-  },
-  {
-    id: 4,
-    title: 'Mastering CSS Grid: Advanced Layout Techniques',
-    description:
-      'Deep dive into CSS Grid with advanced techniques for creating complex, responsive layouts.',
-    date: '2024-01-08',
-    readTime: '10 min read',
-    category: 'Development',
-    author: 'UI Surgeon',
-    slug: 'css-grid-advanced',
-    featured: false,
-  },
-  {
-    id: 5,
-    title: 'Color Theory for UI Designers: A Practical Guide',
-    description:
-      'Understanding color psychology and how to apply it effectively in your user interface designs.',
-    date: '2024-01-05',
-    readTime: '7 min read',
-    category: 'Design',
-    author: 'UI Surgeon',
-    slug: 'color-theory-ui',
-    featured: false,
-  },
-  {
-    id: 6,
-    title: 'Performance Optimization for React Applications',
-    description:
-      'Learn how to optimize your React apps for better performance and user experience.',
-    date: '2024-01-03',
-    readTime: '14 min read',
-    category: 'Development',
-    author: 'UI Surgeon',
-    slug: 'react-performance',
-    featured: false,
-  },
-]
+export default async function PostsPage({ searchParams }: PostsPageProps) {
+  const resolvedSearchParams = await searchParams
+  const currentPage = Number(resolvedSearchParams.page) || 1
+  const selectedCategory = resolvedSearchParams.category
+  const searchQuery = resolvedSearchParams.search
+  const postsPerPage = 12
 
-const categories = ['All', 'Design', 'Development', 'Design Systems', 'UX Research']
+  // Fetch data from Payload CMS
+  const [allPosts, categories] = await Promise.all([
+    getPosts({
+      limit: postsPerPage * currentPage, // Load posts for current page
+      categories: selectedCategory ? [selectedCategory] : undefined,
+    }),
+    getCategories(),
+  ])
 
-export default function PostsPage() {
-  const [selectedCategory, setSelectedCategory] = React.useState('All')
-  const [searchQuery, setSearchQuery] = React.useState('')
+  // Filter posts by search query if provided
+  const filteredPosts = searchQuery
+    ? allPosts.filter(
+        (post) =>
+          post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          post.meta?.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : allPosts
 
-  const filteredPosts = allPosts.filter((post) => {
-    const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.description.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
-
-  const featuredPosts = filteredPosts.filter((post) => post.featured)
-  const regularPosts = filteredPosts.filter((post) => !post.featured)
+  // Separate featured and regular posts
+  const hasMorePosts = filteredPosts.length === postsPerPage * currentPage
 
   return (
     <div className="container py-12">
@@ -115,114 +52,85 @@ export default function PostsPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="mb-12">
-        {/* Search */}
-        <div className="relative max-w-md mx-auto mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search posts..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+      <div className="mb-12 space-y-6">
+        {/* Search Bar */}
+        <div className="max-w-md mx-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search posts..."
+              className="pl-10"
+              defaultValue={searchQuery}
+              name="search"
+            />
+          </div>
         </div>
 
-        {/* Category filters */}
+        {/* Category Filters */}
         <div className="flex flex-wrap justify-center gap-2">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
+          <Link href="/pages/posts">
+            <Button variant={!selectedCategory ? 'default' : 'outline'} size="sm">
+              All
             </Button>
+          </Link>
+          {categories.map((category) => (
+            <Link key={category.id} href={`/pages/posts?category=${category.slug}`}>
+              <Button
+                variant={selectedCategory === category.slug ? 'default' : 'outline'}
+                size="sm"
+              >
+                {category.title}
+              </Button>
+            </Link>
           ))}
         </div>
+
+        {/* Active Filters Display */}
+        {(selectedCategory || searchQuery) && (
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              {searchQuery && `Searching for "${searchQuery}"`}
+              {searchQuery && selectedCategory && ' in '}
+              {selectedCategory &&
+                `"${categories.find((c) => c.slug === selectedCategory)?.title}" category`}
+              {' • '}
+              <Link href="/pages/posts" className="text-primary hover:underline">
+                Clear filters
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Featured Posts */}
-      {featuredPosts.length > 0 && (
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold mb-8">Featured Posts</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {featuredPosts.map((post) => (
-              <Card key={post.id} className="group hover:shadow-lg transition-all duration-300">
-                <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-t-lg flex items-center justify-center">
-                  <span className="text-muted-foreground text-sm">{post.category}</span>
-                </div>
-                <CardHeader>
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{new Date(post.date).toLocaleDateString()}</span>
-                    <span>•</span>
-                    <Clock className="h-4 w-4" />
-                    <span>{post.readTime}</span>
-                  </div>
-                  <CardTitle className="group-hover:text-blue-600 transition-colors">
-                    <Link href={`/posts/${post.slug}`}>{post.title}</Link>
-                  </CardTitle>
-                  <CardDescription>{post.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="ghost" className="p-0 h-auto font-medium">
-                    <Link href={`/posts/${post.slug}`} className="flex items-center">
-                      Read more
-                      <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Regular Posts */}
-      {regularPosts.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold mb-8">
-            {featuredPosts.length > 0 ? 'More Posts' : 'All Posts'}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {regularPosts.map((post) => (
-              <Card key={post.id} className="group hover:shadow-lg transition-all duration-300">
-                <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-t-lg flex items-center justify-center">
-                  <span className="text-muted-foreground text-sm">{post.category}</span>
-                </div>
-                <CardHeader>
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{new Date(post.date).toLocaleDateString()}</span>
-                    <span>•</span>
-                    <Clock className="h-4 w-4" />
-                    <span>{post.readTime}</span>
-                  </div>
-                  <CardTitle className="group-hover:text-blue-600 transition-colors">
-                    <Link href={`/posts/${post.slug}`}>{post.title}</Link>
-                  </CardTitle>
-                  <CardDescription className="line-clamp-2">{post.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="ghost" className="p-0 h-auto font-medium">
-                    <Link href={`/posts/${post.slug}`} className="flex items-center">
-                      Read more
-                      <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* No results */}
-      {filteredPosts.length === 0 && (
+      {/* Posts Grid using CollectionArchive */}
+      {filteredPosts.length > 0 ? (
+        <CollectionArchive posts={filteredPosts} relationTo="posts" />
+      ) : (
         <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg">No posts found matching your criteria.</p>
+          <p className="text-muted-foreground text-lg">
+            {searchQuery || selectedCategory
+              ? 'No posts found matching your criteria.'
+              : 'No posts found.'}
+          </p>
+          {(searchQuery || selectedCategory) && (
+            <Link href="/pages/posts" className="text-primary hover:underline mt-2 inline-block">
+              View all posts
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {hasMorePosts && (
+        <div className="text-center mt-12">
+          <Link
+            href={`/pages/posts?page=${currentPage + 1}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+          >
+            <Button variant="outline" size="lg">
+              Load More Posts
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       )}
     </div>
