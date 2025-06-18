@@ -203,12 +203,12 @@ export const Newsletter: CollectionConfig = {
       },
       access: {
         read: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
         update: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
       },
     },
@@ -222,12 +222,12 @@ export const Newsletter: CollectionConfig = {
       },
       access: {
         read: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
         update: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
       },
     },
@@ -241,12 +241,12 @@ export const Newsletter: CollectionConfig = {
       },
       access: {
         read: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
         update: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
       },
     },
@@ -281,12 +281,14 @@ export const Newsletter: CollectionConfig = {
 
         // Capture IP and user agent for new subscriptions
         if (!data.id) {
-          data.ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
+          data.ipAddress =
+            req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
           data.userAgent = req.headers.get('user-agent') || 'unknown'
-          
+
           // Generate confirmation token for double opt-in
-          data.confirmationToken = Math.random().toString(36).substring(2, 15) + 
-                                  Math.random().toString(36).substring(2, 15)
+          data.confirmationToken =
+            Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15)
         }
 
         return data

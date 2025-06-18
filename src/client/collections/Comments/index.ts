@@ -179,11 +179,11 @@ export const Comments: CollectionConfig = {
         description: 'Browser user agent',
       },
       access: {
-          read: ({ req: { user } }) => {
-             return !!(user && user.role === 'admin')
-           },
-          update: () => false,
+        read: ({ req: { user } }) => {
+          return !!(user && user.role === 'admin')
         },
+        update: () => false,
+      },
     },
     {
       name: 'likes',
@@ -211,7 +211,8 @@ export const Comments: CollectionConfig = {
       ({ data, req }) => {
         // Capture IP address and user agent for new comments
         if (!data.id) {
-          data.ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
+          data.ipAddress =
+            req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
           data.userAgent = req.headers.get('user-agent') || 'unknown'
         }
 

@@ -111,7 +111,11 @@ class EmailService {
   /**
    * Send email confirmation for newsletter subscription
    */
-  async sendConfirmationEmail(email: string, confirmationToken: string, baseUrl: string): Promise<void> {
+  async sendConfirmationEmail(
+    email: string,
+    confirmationToken: string,
+    baseUrl: string,
+  ): Promise<void> {
     const confirmationUrl = `${baseUrl}/newsletter/confirm?token=${confirmationToken}`
     const subject = 'Please confirm your newsletter subscription'
     const html = `
@@ -147,7 +151,7 @@ class EmailService {
     postTitle: string,
     commentAuthor: string,
     commentContent: string,
-    postUrl: string
+    postUrl: string,
   ): Promise<void> {
     const subject = `New comment on "${postTitle}"`
     const html = `
@@ -184,7 +188,7 @@ class EmailService {
     subscribers: string[],
     subject: string,
     content: string,
-    unsubscribeUrl: string
+    unsubscribeUrl: string,
   ): Promise<void> {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -202,20 +206,20 @@ class EmailService {
     const batchSize = 50
     for (let i = 0; i < subscribers.length; i += batchSize) {
       const batch = subscribers.slice(i, i + batchSize)
-      
+
       await Promise.all(
-        batch.map(email => 
+        batch.map((email) =>
           this.sendEmail({
             to: email,
             subject,
             html,
-          })
-        )
+          }),
+        ),
       )
 
       // Add delay between batches
       if (i + batchSize < subscribers.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 1000))
       }
     }
   }

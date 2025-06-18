@@ -51,11 +51,13 @@ export const Categories: CollectionConfig = {
         placeholder: '#3B82F6',
       },
       validate: (value: string | string[] | null | undefined) => {
-        if (!value || (Array.isArray(value) && value.length === 0)) return true;
-        const colorValue = Array.isArray(value) ? value[0] : value;
-        if (typeof colorValue !== 'string') return true;
-        const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-        return hexColorRegex.test(colorValue) || 'Please enter a valid hex color code (e.g., #3B82F6)';
+        if (!value || (Array.isArray(value) && value.length === 0)) return true
+        const colorValue = Array.isArray(value) ? value[0] : value
+        if (typeof colorValue !== 'string') return true
+        const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
+        return (
+          hexColorRegex.test(colorValue) || 'Please enter a valid hex color code (e.g., #3B82F6)'
+        )
       },
     },
     {

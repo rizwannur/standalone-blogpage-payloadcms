@@ -16,7 +16,7 @@ export function calculateReadingTime(text: string, wordsPerMinute: number = 200)
     .trim()
 
   // Count words (split by whitespace and filter out empty strings)
-  const wordCount = cleanText.split(' ').filter(word => word.length > 0).length
+  const wordCount = cleanText.split(' ').filter((word) => word.length > 0).length
 
   // Calculate reading time in minutes
   const readingTime = Math.ceil(wordCount / wordsPerMinute)

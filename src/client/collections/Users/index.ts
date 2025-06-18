@@ -58,12 +58,12 @@ export const Users: CollectionConfig = {
           return !!(user && user.role === 'admin')
         },
         read: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
         update: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
       },
       admin: {
@@ -79,12 +79,12 @@ export const Users: CollectionConfig = {
           return !!(user && user.role === 'admin')
         },
         read: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
         update: ({ req }) => {
-          if (!req.user) return false;
-          return req.user.role === 'admin';
+          if (!req.user) return false
+          return req.user.role === 'admin'
         },
       },
       admin: {

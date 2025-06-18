@@ -68,7 +68,8 @@ export const Analytics: CollectionConfig = {
       relationTo: 'posts',
       admin: {
         description: 'Related post (if applicable)',
-        condition: (data) => ['post_view', 'post_like', 'post_share', 'comment'].includes(data.type),
+        condition: (data) =>
+          ['post_view', 'post_like', 'post_share', 'comment'].includes(data.type),
       },
     },
     {
@@ -176,7 +177,8 @@ export const Analytics: CollectionConfig = {
       ({ data, req }) => {
         // Auto-populate IP and user agent if not provided
         if (!data.ipAddress) {
-          data.ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
+          data.ipAddress =
+            req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
         }
         if (!data.userAgent) {
           data.userAgent = req.headers.get('user-agent') || 'unknown'
