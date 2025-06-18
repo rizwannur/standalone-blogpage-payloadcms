@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
+import AvatarManager from './AvatarManager'
 
 import {
   User,
@@ -127,7 +128,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
   const [formData, setFormData] = useState<Partial<UserProfileData>>({})
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'preferences'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'avatar' | 'security' | 'preferences'>('profile')
 
   useEffect(() => {
     if (profileData) {
@@ -432,6 +433,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
       <div className="flex space-x-1 border-b">
         {[
           { id: 'profile', label: 'Profile', icon: User },
+          { id: 'avatar', label: 'Avatar', icon: Camera },
           { id: 'security', label: 'Security', icon: Key },
           { id: 'preferences', label: 'Preferences', icon: Settings },
         ].map((tab) => {
@@ -547,6 +549,25 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {activeTab === 'avatar' && (
+        <AvatarManager 
+          onAvatarUpdate={(avatarData) => {
+            // Update the profile data when avatar is changed
+            setProfileData(prev => ({
+              ...prev,
+              avatar: typeof avatarData.avatar === 'string' 
+                ? avatarData.avatar 
+                : avatarData.avatar 
+                  ? (avatarData.avatar as Media)?.url || '' 
+                  : ''
+            }))
+            // Refresh user data in the admin provider
+            refreshUser()
+          }}
+          className="w-full"
+        />
       )}
 
       {activeTab === 'security' && (
