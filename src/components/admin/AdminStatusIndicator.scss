@@ -1,0 +1,55 @@
+// AdminStatusIndicator Component Styles
+.admin-status-indicator {
+  @apply space-y-2;
+
+  .status-badge {
+    @apply inline-flex items-center gap-1 text-xs;
+    
+    &.draft {
+      @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+      
+      .dark & {
+        @apply bg-yellow-900/20 text-yellow-300 border-yellow-800;
+      }
+    }
+    
+    &.published {
+      @apply bg-green-100 text-green-800 border-green-200;
+      
+      .dark & {
+        @apply bg-green-900/20 text-green-300 border-green-800;
+      }
+    }
+  }
+
+  .status-info {
+    @apply flex flex-wrap items-center gap-2 text-xs text-muted-foreground;
+    
+    .info-item {
+      @apply flex items-center gap-1;
+      
+      .icon {
+        @apply h-3 w-3 opacity-70;
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 640px) {
+    .status-info {
+      @apply flex-col items-start gap-1;
+    }
+  }
+}
+
+// Animation for status changes
+.status-transition {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+// Hover effects for interactive elements
+.admin-status-indicator:hover {
+  .status-badge {
+    @apply shadow-sm transform scale-105;
+  }
+}

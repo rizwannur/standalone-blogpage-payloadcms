@@ -1,0 +1,177 @@
+// AdminToolbar Component Styles
+.admin-toolbar {
+  @apply fixed top-0 right-0 z-50 p-4;
+  
+  .toolbar-trigger {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    @apply rounded-full p-3 shadow-lg transition-all duration-200;
+    @apply border border-primary/20;
+    
+    &:hover {
+      @apply shadow-xl transform scale-105;
+    }
+    
+    .icon {
+      @apply h-5 w-5;
+    }
+  }
+
+  // Dropdown menu styling
+  .admin-dropdown {
+    @apply min-w-[280px] p-2;
+    
+    .dropdown-header {
+      @apply px-3 py-2 text-sm font-semibold text-muted-foreground;
+      @apply border-b border-border mb-2;
+    }
+    
+    .dropdown-section {
+      @apply space-y-1 mb-3;
+      
+      &:last-child {
+        @apply mb-0;
+      }
+    }
+    
+    .dropdown-item {
+      @apply flex items-center gap-3 px-3 py-2 text-sm;
+      @apply rounded-md transition-colors duration-150;
+      @apply hover:bg-accent hover:text-accent-foreground;
+      @apply focus:bg-accent focus:text-accent-foreground;
+      
+      .icon {
+        @apply h-4 w-4 opacity-70;
+      }
+      
+      &.destructive {
+        @apply text-destructive hover:bg-destructive/10;
+        @apply focus:bg-destructive/10;
+      }
+    }
+    
+    .separator {
+      @apply my-2 border-t border-border;
+    }
+  }
+
+  // Login dialog styling
+  .login-dialog {
+    .dialog-content {
+      @apply max-w-md;
+    }
+    
+    .login-form {
+      @apply space-y-4 mt-4;
+      
+      .form-group {
+        @apply space-y-2;
+        
+        label {
+          @apply text-sm font-medium text-foreground;
+        }
+        
+        input {
+          @apply w-full px-3 py-2 border border-input rounded-md;
+          @apply bg-background text-foreground;
+          @apply focus:outline-none focus:ring-2 focus:ring-ring;
+          @apply transition-colors duration-150;
+        }
+      }
+      
+      .form-actions {
+        @apply flex gap-2 pt-4;
+        
+        button {
+          @apply flex-1;
+        }
+      }
+    }
+  }
+
+  // User info display
+  .user-info {
+    @apply flex items-center gap-3 px-3 py-2;
+    @apply bg-muted/50 rounded-md mb-2;
+    
+    .avatar {
+      @apply h-8 w-8 rounded-full bg-primary/10;
+      @apply flex items-center justify-center;
+      
+      .icon {
+        @apply h-4 w-4 text-primary;
+      }
+    }
+    
+    .user-details {
+      @apply flex-1 min-w-0;
+      
+      .name {
+        @apply text-sm font-medium text-foreground truncate;
+      }
+      
+      .role {
+        @apply text-xs text-muted-foreground capitalize;
+      }
+    }
+  }
+
+  // Loading states
+  .loading {
+    @apply opacity-50 pointer-events-none;
+    
+    .spinner {
+      @apply animate-spin h-4 w-4;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    @apply p-2;
+    
+    .admin-dropdown {
+      @apply min-w-[240px];
+    }
+    
+    .toolbar-trigger {
+      @apply p-2;
+      
+      .icon {
+        @apply h-4 w-4;
+      }
+    }
+  }
+
+  // Dark mode specific adjustments
+  .dark & {
+    .toolbar-trigger {
+      @apply shadow-2xl;
+    }
+    
+    .user-info {
+      @apply bg-muted/30;
+    }
+  }
+}
+
+// Animation for toolbar appearance
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.admin-toolbar {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+// Notification badge for admin actions
+.notification-badge {
+  @apply absolute -top-1 -right-1 h-3 w-3;
+  @apply bg-destructive rounded-full;
+  @apply animate-pulse;
+}

@@ -1,9 +1,16 @@
-import Link from 'next/link'
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import Link from 'next/link'
 import { getPosts, getCategories } from '@/lib/payload'
 import { CollectionArchive } from '@/components/CollectionArchive'
+import { PageRange } from '@/components/PageRange'
+import { Pagination } from '@/components/Pagination'
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
+import React from 'react'
+import { Badge } from '@/components/ui/badge'
+import Search from '@/components/Search'
 
 interface PostsPageProps {
   searchParams: {
@@ -51,30 +58,27 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         </p>
       </div>
 
-      {/* Search and Filters */}
-      <div className="mb-12 space-y-6">
-        {/* Search Bar */}
-        <div className="max-w-md mx-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search posts..."
-              className="pl-10"
-              defaultValue={searchQuery}
-              name="search"
-            />
-          </div>
+      {/* Enhanced Search Component */}
+      <div className="mb-12">
+        <div className="max-w-2xl mx-auto">
+          <Search
+            initialQuery={searchQuery || ''}
+            initialCategory={selectedCategory || ''}
+            categories={categories}
+            showFilters={false}
+            compact={true}
+          />
         </div>
-
+        
         {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-2">
-          <Link href="/pages/posts">
+        <div className="flex flex-wrap justify-center gap-2 mt-6">
+          <Link href="/posts">
             <Button variant={!selectedCategory ? 'default' : 'outline'} size="sm">
               All
             </Button>
           </Link>
           {categories.map((category) => (
-            <Link key={category.id} href={`/pages/posts?category=${category.slug}`}>
+            <Link key={category.id} href={`/posts?category=${category.slug}`}>
               <Button
                 variant={selectedCategory === category.slug ? 'default' : 'outline'}
                 size="sm"
@@ -87,14 +91,14 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
 
         {/* Active Filters Display */}
         {(selectedCategory || searchQuery) && (
-          <div className="text-center">
+          <div className="text-center mt-4">
             <p className="text-sm text-muted-foreground">
               {searchQuery && `Searching for "${searchQuery}"`}
               {searchQuery && selectedCategory && ' in '}
               {selectedCategory &&
                 `"${categories.find((c) => c.slug === selectedCategory)?.title}" category`}
               {' • '}
-              <Link href="/pages/posts" className="text-primary hover:underline">
+              <Link href="/posts" className="text-primary hover:underline">
                 Clear filters
               </Link>
             </p>
@@ -113,7 +117,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
               : 'No posts found.'}
           </p>
           {(searchQuery || selectedCategory) && (
-            <Link href="/pages/posts" className="text-primary hover:underline mt-2 inline-block">
+            <Link href="/posts" className="text-primary hover:underline mt-2 inline-block">
               View all posts
             </Link>
           )}
@@ -124,7 +128,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
       {hasMorePosts && (
         <div className="text-center mt-12">
           <Link
-            href={`/pages/posts?page=${currentPage + 1}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+            href={`/posts?page=${currentPage + 1}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
           >
             <Button variant="outline" size="lg">
               Load More Posts

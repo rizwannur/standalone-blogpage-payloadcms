@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { getPostBySlug, getRelatedPosts, getPosts } from '@/lib/payload'
 import RichText from '@/components/RichText'
 import { CollectionArchive } from '@/components/CollectionArchive'
+import { Comments } from '@/components/Comments'
 
 // Helper functions
 function formatDate(dateString: string): string {
@@ -203,6 +204,11 @@ export default async function PostPage({ params }: PageProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Comments Section */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <Comments postId={post.id} postTitle={post.title} />
+        </div>
 
         {/* Related posts */}
         {relatedPosts.length > 0 && (

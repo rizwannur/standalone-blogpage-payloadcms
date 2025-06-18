@@ -1,0 +1,268 @@
+// QuickEditModal Component Styles
+.quick-edit-modal {
+  .modal-content {
+    @apply max-w-2xl max-h-[90vh] overflow-hidden;
+    
+    .modal-header {
+      @apply border-b border-border pb-4 mb-6;
+      
+      .modal-title {
+        @apply text-xl font-semibold text-foreground;
+        @apply flex items-center gap-2;
+        
+        .icon {
+          @apply h-5 w-5 text-primary;
+        }
+      }
+      
+      .modal-description {
+        @apply text-sm text-muted-foreground mt-1;
+      }
+    }
+    
+    .modal-body {
+      @apply overflow-y-auto max-h-[60vh] pr-2;
+      
+      // Custom scrollbar
+      &::-webkit-scrollbar {
+        @apply w-2;
+      }
+      
+      &::-webkit-scrollbar-track {
+        @apply bg-muted/30 rounded-full;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        @apply bg-muted-foreground/30 rounded-full;
+        
+        &:hover {
+          @apply bg-muted-foreground/50;
+        }
+      }
+    }
+  }
+
+  // Form styling
+  .edit-form {
+    @apply space-y-6;
+    
+    .form-section {
+      @apply space-y-4;
+      
+      .section-title {
+        @apply text-sm font-medium text-foreground;
+        @apply border-b border-border/50 pb-2 mb-4;
+      }
+    }
+    
+    .form-group {
+      @apply space-y-2;
+      
+      label {
+        @apply text-sm font-medium text-foreground;
+        @apply flex items-center gap-2;
+        
+        .required {
+          @apply text-destructive;
+        }
+        
+        .help-icon {
+          @apply h-3 w-3 text-muted-foreground cursor-help;
+        }
+      }
+      
+      .form-control {
+        @apply w-full px-3 py-2 border border-input rounded-md;
+        @apply bg-background text-foreground placeholder:text-muted-foreground;
+        @apply focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+        @apply transition-all duration-150;
+        
+        &:hover {
+          @apply border-input/80;
+        }
+        
+        &.error {
+          @apply border-destructive focus:ring-destructive/20;
+        }
+        
+        &.success {
+          @apply border-green-500 focus:ring-green-500/20;
+        }
+      }
+      
+      textarea.form-control {
+        @apply min-h-[100px] resize-y;
+      }
+      
+      .form-help {
+        @apply text-xs text-muted-foreground;
+      }
+      
+      .form-error {
+        @apply text-xs text-destructive;
+        @apply flex items-center gap-1;
+        
+        .icon {
+          @apply h-3 w-3;
+        }
+      }
+    }
+    
+    // Select component styling
+    .select-wrapper {
+      .select-trigger {
+        @apply w-full justify-between;
+        
+        &[data-state="open"] {
+          @apply ring-2 ring-ring;
+        }
+      }
+      
+      .select-content {
+        @apply min-w-[200px];
+        
+        .select-item {
+          @apply cursor-pointer transition-colors;
+          
+          &[data-state="checked"] {
+            @apply bg-accent text-accent-foreground;
+          }
+        }
+      }
+    }
+    
+    // Switch component styling
+    .switch-wrapper {
+      @apply flex items-center justify-between p-3;
+      @apply border border-border rounded-md;
+      @apply hover:bg-muted/50 transition-colors;
+      
+      .switch-label {
+        @apply flex-1;
+        
+        .title {
+          @apply text-sm font-medium text-foreground;
+        }
+        
+        .description {
+          @apply text-xs text-muted-foreground mt-1;
+        }
+      }
+    }
+  }
+
+  // Modal footer
+  .modal-footer {
+    @apply flex items-center justify-end gap-3;
+    @apply border-t border-border pt-6 mt-6;
+    
+    .footer-actions {
+      @apply flex gap-2;
+      
+      button {
+        @apply min-w-[100px];
+        
+        &.primary {
+          @apply bg-primary text-primary-foreground;
+          @apply hover:bg-primary/90;
+        }
+        
+        &.secondary {
+          @apply bg-secondary text-secondary-foreground;
+          @apply hover:bg-secondary/80;
+        }
+        
+        &.loading {
+          @apply opacity-70 cursor-not-allowed;
+          
+          .spinner {
+            @apply animate-spin h-4 w-4 mr-2;
+          }
+        }
+      }
+    }
+  }
+
+  // Status indicators
+  .status-indicator {
+    @apply inline-flex items-center gap-1 px-2 py-1;
+    @apply text-xs font-medium rounded-full;
+    
+    &.draft {
+      @apply bg-yellow-100 text-yellow-800;
+      
+      .dark & {
+        @apply bg-yellow-900/20 text-yellow-300;
+      }
+    }
+    
+    &.published {
+      @apply bg-green-100 text-green-800;
+      
+      .dark & {
+        @apply bg-green-900/20 text-green-300;
+      }
+    }
+    
+    .icon {
+      @apply h-3 w-3;
+    }
+  }
+
+  // Loading overlay
+  .loading-overlay {
+    @apply absolute inset-0 bg-background/80 backdrop-blur-sm;
+    @apply flex items-center justify-center z-10;
+    
+    .loading-spinner {
+      @apply animate-spin h-8 w-8 text-primary;
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .modal-content {
+      @apply max-w-[95vw] max-h-[95vh] m-2;
+    }
+    
+    .modal-footer {
+      .footer-actions {
+        @apply flex-col w-full;
+        
+        button {
+          @apply w-full;
+        }
+      }
+    }
+  }
+
+  // Animation for form validation
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  
+  .form-group.error {
+    animation: shake 0.3s ease-in-out;
+  }
+}
+
+// Toast notifications for save actions
+.save-notification {
+  @apply fixed bottom-4 right-4 z-50;
+  @apply bg-background border border-border rounded-lg shadow-lg;
+  @apply p-4 min-w-[300px];
+  
+  &.success {
+    @apply border-green-500/20 bg-green-50;
+    
+    .dark & {
+      @apply bg-green-900/10;
+    }
+  }
+  
+  &.error {
+    @apply border-destructive/20 bg-destructive/5;
+  }
+}

@@ -4,11 +4,13 @@ import useClickableCard from '@/client/utilities/useClickableCard'
 import Link from 'next/link'
 import React, { Fragment } from 'react'
 
-import type { Post } from '@/payload-types'
+import type { Post, Page } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import { AdminActions } from './AdminActions'
+import { AdminStatusIndicator } from '@/components/admin/AdminStatusIndicator'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'id' | '_status'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -32,11 +34,12 @@ export const Card: React.FC<{
   return (
     <article
       className={cn(
-        'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
+        'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer group relative',
         className,
       )}
       ref={card.ref}
     >
+      {doc && doc.id && <AdminActions doc={doc as Post | Page} collection={relationTo || 'posts'} />}
       <div className="relative w-full ">
         {!metaImage && <div className="">No image</div>}
         {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
@@ -78,6 +81,9 @@ export const Card: React.FC<{
           </div>
         )}
         {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
+        
+        {/* Admin Status Indicator */}
+        {doc && doc.id && <AdminStatusIndicator doc={doc as Post | Page} className="mt-3" />}
       </div>
     </article>
   )
