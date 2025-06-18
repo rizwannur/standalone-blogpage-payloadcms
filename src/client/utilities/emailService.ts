@@ -223,6 +223,55 @@ class EmailService {
       }
     }
   }
+
+  /**
+   * Send search notification to admin about search queries
+   */
+  async sendSearchNotification(
+    adminEmail: string,
+    searchQuery: string,
+    category: string,
+    resultCount: number,
+  ): Promise<void> {
+    const subject =
+      resultCount === 0
+        ? `No results found for search: "${searchQuery}"`
+        : `Popular search query: "${searchQuery}"`
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #333;">Search Analytics Notification</h1>
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
+          <p><strong>Search Query:</strong> "${searchQuery}"</p>
+          <p><strong>Category:</strong> ${category}</p>
+          <p><strong>Results Found:</strong> ${resultCount}</p>
+          <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+        ${
+          resultCount === 0
+            ? `
+          <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <h3 style="color: #856404; margin-top: 0;">Content Opportunity</h3>
+            <p style="color: #856404;">This search returned no results. Consider creating content about this topic to improve user experience.</p>
+          </div>
+        `
+            : `
+          <div style="background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <h3 style="color: #155724; margin-top: 0;">Popular Search</h3>
+            <p style="color: #155724;">This search query is generating interest. Consider creating more related content.</p>
+          </div>
+        `
+        }
+        <p>You can view detailed search analytics in your admin panel.</p>
+      </div>
+    `
+
+    await this.sendEmail({
+      to: adminEmail,
+      subject,
+      html,
+    })
+  }
 }
 
 // Export singleton instance

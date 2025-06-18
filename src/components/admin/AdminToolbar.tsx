@@ -51,7 +51,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className }) => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoginLoading(true)
-    
+
     try {
       const success = await login(email, password)
       if (success) {
@@ -142,7 +142,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className }) => {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Admin Panel</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          
+
           {/* Quick Actions */}
           <DropdownMenuItem asChild>
             <Link href="/admin">
@@ -150,7 +150,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className }) => {
               Admin Dashboard
             </Link>
           </DropdownMenuItem>
-          
+
           {(isAdmin || isBlogger) && (
             <>
               <DropdownMenuItem asChild>
@@ -159,7 +159,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className }) => {
                   New Post
                 </Link>
               </DropdownMenuItem>
-              
+
               <DropdownMenuItem asChild>
                 <Link href="/admin/collections/posts">
                   <FileText className="h-4 w-4 mr-2" />
@@ -168,7 +168,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className }) => {
               </DropdownMenuItem>
             </>
           )}
-          
+
           {isAdmin && (
             <>
               <DropdownMenuItem asChild>
@@ -177,21 +177,21 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className }) => {
                   Manage Pages
                 </Link>
               </DropdownMenuItem>
-              
+
               <DropdownMenuItem asChild>
                 <Link href="/admin/collections/media">
                   <Image className="h-4 w-4 mr-2" />
                   Media Library
                 </Link>
               </DropdownMenuItem>
-              
+
               <DropdownMenuItem asChild>
                 <Link href="/admin/collections/users">
                   <Users className="h-4 w-4 mr-2" />
                   Manage Users
                 </Link>
               </DropdownMenuItem>
-              
+
               <DropdownMenuItem asChild>
                 <Link href="/admin/collections/analytics">
                   <BarChart3 className="h-4 w-4 mr-2" />
@@ -200,7 +200,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ className }) => {
               </DropdownMenuItem>
             </>
           )}
-          
+
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>
             <LogOut className="h-4 w-4 mr-2" />

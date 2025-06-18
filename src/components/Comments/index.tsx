@@ -44,14 +44,23 @@ interface CommentFormData {
   parentComment?: string
 }
 
-const CommentItem: React.FC<{
+interface CommentItemProps {
   comment: Comment
-  onReply: (parentId: string) => void
-  level: number
-}> = ({ comment, onReply, level }) => {
+  onReply: (commentId: string) => void
+  onEdit?: (commentId: string, content: string) => void
+  onDelete?: (commentId: string) => void
+  currentUser?: any
+  level?: number
+}
+
+const CommentItem: React.FC<CommentItemProps> = ({ comment, onReply, onEdit, onDelete, currentUser, level = 0 }) => {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editContent, setEditContent] = useState(comment.content)
+  const [isDeleting, setIsDeleting] = useState(false)
+  
   const maxLevel = 3
   const isNested = level > 0
-  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -70,7 +79,7 @@ const CommentItem: React.FC<{
   const getInitials = (name: string) => {
     return name
       .split(' ')
-      .map(word => word[0])
+      .map((word) => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2)
@@ -104,15 +113,42 @@ const CommentItem: React.FC<{
     }
   }
 
+  const canEditOrDelete = () => {
+    if (!currentUser) return false
+    if (currentUser.role === 'admin') return true
+    if (currentUser.role === 'reader' && comment.author && typeof comment.author === 'object') {
+      return comment.author.id === currentUser.id
+    }
+    return false
+  }
+
+  const handleEdit = async () => {
+    if (onEdit && editContent.trim()) {
+      await onEdit(comment.id, editContent.trim())
+      setIsEditing(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (onDelete) {
+      setIsDeleting(true)
+      await onDelete(comment.id)
+      setIsDeleting(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditContent(comment.content)
+    setIsEditing(false)
+  }
+
   return (
     <div className={`${isNested ? 'ml-8 mt-4' : 'mt-6'} ${level >= maxLevel ? 'ml-0' : ''}`}>
       <Card className={`${isNested ? 'border-l-4 border-l-primary/20' : ''}`}>
         <CardContent className="p-4">
           <div className="flex items-start space-x-3">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">
-                {getInitials(getAuthorName())}
-              </AvatarFallback>
+              <AvatarFallback className="text-xs">{getInitials(getAuthorName())}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-2">
@@ -124,44 +160,105 @@ const CommentItem: React.FC<{
                   {formatDate(comment.createdAt)}
                 </span>
               </div>
-              <p className="text-sm text-foreground mb-3 whitespace-pre-wrap">
-                {comment.content}
-              </p>
-              <div className="flex items-center space-x-4">
-                {level < maxLevel && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onReply(comment.id)}
-                    className="text-xs h-7"
-                  >
-                    <Reply className="h-3 w-3 mr-1" />
-                    Reply
-                  </Button>
-                )}
-                {comment.replyCount > 0 && (
-                  <span className="text-xs text-muted-foreground">
-                    {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}
-                  </span>
+              {isEditing ? (
+                <div className="mb-3">
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    className="w-full p-2 border rounded-md resize-none text-sm"
+                    rows={3}
+                    maxLength={1000}
+                  />
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-muted-foreground">
+                      {editContent.length}/1000 characters
+                    </span>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCancelEdit}
+                        className="text-xs h-7"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleEdit}
+                        disabled={!editContent.trim()}
+                        className="text-xs h-7"
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-foreground mb-3 whitespace-pre-wrap">{comment.content}</p>
+              )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  {level < maxLevel && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onReply(comment.id)}
+                      className="text-xs h-7"
+                    >
+                      <Reply className="h-3 w-3 mr-1" />
+                      Reply
+                    </Button>
+                  )}
+                  {comment.replyCount > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {comment.replyCount} {comment.replyCount === 1 ? 'reply' : 'replies'}
+                    </span>
+                  )}
+                </div>
+                {canEditOrDelete() && (
+                  <div className="flex items-center space-x-2">
+                    {!isEditing && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsEditing(true)}
+                        className="text-xs h-7"
+                      >
+                        Edit
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="text-xs h-7 text-destructive hover:text-destructive"
+                    >
+                      {isDeleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Render replies */}
       {comment.replies && comment.replies.length > 0 && (
         <div className="mt-2">
           {comment.replies.map((reply) => (
-            <CommentItem
-              key={reply.id}
-              comment={reply}
-              onReply={onReply}
-              level={level + 1}
+            <CommentItem 
+              key={reply.id} 
+              comment={reply} 
+              onReply={onReply} 
+              onEdit={onEdit}
+              onDelete={onDelete}
+              currentUser={currentUser}
+              level={level + 1} 
             />
-          ))
-          }
+          ))}
         </div>
       )}
     </div>
@@ -186,7 +283,7 @@ const CommentForm: React.FC<{
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.content.trim()) {
       toast.error('Please enter a comment')
       return
@@ -198,7 +295,7 @@ const CommentForm: React.FC<{
     }
 
     await onSubmit(formData)
-    
+
     // Reset form
     setFormData({
       content: '',
@@ -296,6 +393,20 @@ export const Comments: React.FC<CommentsProps> = ({ postId, postTitle }) => {
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+
+  // Fetch current user
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch('/api/auth/me')
+      if (response.ok) {
+        const userData = await response.json()
+        setCurrentUser(userData.user)
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error)
+    }
+  }
 
   const fetchComments = async () => {
     try {
@@ -351,8 +462,51 @@ export const Comments: React.FC<CommentsProps> = ({ postId, postTitle }) => {
     setReplyingTo(null)
   }
 
+  const handleEditComment = async (commentId: string, newContent: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: newContent }),
+      })
+
+      if (response.ok) {
+        toast.success('Comment updated successfully!')
+        await fetchComments()
+      } else {
+        const error = await response.json()
+        toast.error(error.message || 'Failed to update comment')
+      }
+    } catch (error) {
+      console.error('Error updating comment:', error)
+      toast.error('Failed to update comment')
+    }
+  }
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        toast.success('Comment deleted successfully!')
+        await fetchComments()
+      } else {
+        const error = await response.json()
+        toast.error(error.message || 'Failed to delete comment')
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+      toast.error('Failed to delete comment')
+    }
+  }
+
   useEffect(() => {
     fetchComments()
+    fetchCurrentUser()
   }, [postId])
 
   if (loading) {
@@ -372,18 +526,12 @@ export const Comments: React.FC<CommentsProps> = ({ postId, postTitle }) => {
     <div className="mt-12">
       <div className="flex items-center space-x-2 mb-6">
         <MessageCircle className="h-6 w-6" />
-        <h2 className="text-2xl font-bold">
-          Comments ({comments.length})
-        </h2>
+        <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
       </div>
 
       {/* Comment Form */}
       {!replyingTo && (
-        <CommentForm
-          postId={postId}
-          onSubmit={handleSubmitComment}
-          isSubmitting={isSubmitting}
-        />
+        <CommentForm postId={postId} onSubmit={handleSubmitComment} isSubmitting={isSubmitting} />
       )}
 
       {/* Comments List */}
@@ -401,10 +549,13 @@ export const Comments: React.FC<CommentsProps> = ({ postId, postTitle }) => {
         <div className="mt-6">
           {comments.map((comment) => (
             <div key={comment.id}>
-              <CommentItem
-                comment={comment}
-                onReply={handleReply}
-                level={0}
+              <CommentItem 
+                comment={comment} 
+                onReply={handleReply} 
+                onEdit={handleEditComment}
+                onDelete={handleDeleteComment}
+                currentUser={currentUser}
+                level={0} 
               />
               {replyingTo === comment.id && (
                 <div className="ml-8 mt-4">

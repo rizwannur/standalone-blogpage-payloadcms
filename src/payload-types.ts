@@ -438,7 +438,7 @@ export interface User {
   /**
    * User role determines access permissions
    */
-  role: 'admin' | 'blogger';
+  role: 'admin' | 'blogger' | 'reader';
   /**
    * Inactive users cannot log in
    */
@@ -832,9 +832,9 @@ export interface Comment {
    */
   parentComment?: (string | null) | Comment;
   /**
-   * Comment moderation status
+   * Comment moderation status (admin only)
    */
-  status: 'pending' | 'approved' | 'rejected' | 'spam';
+  status: 'approved' | 'rejected' | 'spam';
   /**
    * IP address of the commenter
    */
@@ -965,6 +965,14 @@ export interface Analytics {
     | number
     | boolean
     | null;
+  /**
+   * Search query text (for search events)
+   */
+  searchQuery?: string | null;
+  /**
+   * Category filter used in search (for search events)
+   */
+  category?: string | null;
   /**
    * User session identifier
    */
@@ -1642,6 +1650,8 @@ export interface AnalyticsSelect<T extends boolean = true> {
   user?: T;
   value?: T;
   metadata?: T;
+  searchQuery?: T;
+  category?: T;
   sessionId?: T;
   ipAddress?: T;
   userAgent?: T;
@@ -2045,6 +2055,10 @@ export interface Setting {
    */
   fromName?: string | null;
   /**
+   * Admin email address for notifications
+   */
+  adminEmail?: string | null;
+  /**
    * Social media links for the footer and author profiles
    */
   socialLinks?:
@@ -2142,6 +2156,7 @@ export interface SettingsSelect<T extends boolean = true> {
   smtpPassword?: T;
   fromEmail?: T;
   fromName?: T;
+  adminEmail?: T;
   socialLinks?:
     | T
     | {

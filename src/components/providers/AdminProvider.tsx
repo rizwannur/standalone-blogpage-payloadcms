@@ -38,7 +38,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch('/api/users/me', {
+      const response = await fetch('/api/auth/me', {
         credentials: 'include',
       })
       
@@ -58,7 +58,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/users/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,6 +70,10 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
       if (response.ok) {
         const data = await response.json()
         setUser(data.user)
+        // Force a refresh after successful login
+        setTimeout(() => {
+          window.location.reload()
+        }, 100)
         return true
       }
       return false
@@ -81,11 +85,15 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
 
   const logout = async (): Promise<void> => {
     try {
-      await fetch('/api/users/logout', {
+      await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       })
       setUser(null)
+      // Force a refresh after logout to clear any cached state
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
     } catch (error) {
       console.error('Logout error:', error)
     }

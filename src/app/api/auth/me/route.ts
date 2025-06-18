@@ -10,26 +10,25 @@ export async function GET(request: NextRequest) {
     const { user } = await payload.auth({ headers: request.headers })
 
     if (!user) {
-      return NextResponse.json(
-        { message: 'Not authenticated' },
-        { status: 401 }
-      )
+      return NextResponse.json({ message: 'Not authenticated' }, { status: 401 })
     }
 
+    // Get the full user data with populated relationships
+    const fullUser = await payload.findByID({
+      collection: 'users',
+      id: user.id,
+      depth: 2, // Populate relationships like avatar
+    })
+
     // Return user data without sensitive information
+    const { password, salt, hash, resetPasswordToken, resetPasswordExpiration, ...safeUser } =
+      fullUser
+
     return NextResponse.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        name: user.name,
-      },
+      user: safeUser,
     })
   } catch (error) {
     console.error('Auth me error:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 })
   }
 }

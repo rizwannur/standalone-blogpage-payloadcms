@@ -43,7 +43,7 @@ export function Newsletter() {
               {/* Heading */}
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Stay Updated</h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Get the latest UI/UX insights, tools, and resources delivered to your inbox. Join
+                Get the latest development insights, tutorials, and articles delivered to your inbox. Join
                 10,000+ designers and developers.
               </p>
 
@@ -88,10 +88,10 @@ export function Newsletter() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="font-semibold mb-2">Exclusive Tools</div>
-                  <div className="text-sm text-muted-foreground">
-                    Early access to new tools and features
-                  </div>
+                  <div className="font-semibold mb-2">Exclusive Content</div>
+            <div className="text-sm text-muted-foreground">
+              Early access to new articles and tutorials
+            </div>
                 </div>
                 <div className="text-center">
                   <div className="font-semibold mb-2">Community</div>

@@ -1,5 +1,6 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
@@ -48,6 +49,24 @@ export default buildConfig({
   editor: defaultLexical,
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
+  }),
+  email: nodemailerAdapter({
+    defaultFromAddress: process.env.FROM_EMAIL || 'noreply@localhost',
+    defaultFromName: process.env.FROM_NAME || 'Rafey Blog',
+    // If SMTP credentials are not provided, use ethereal.email for development
+    ...(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
+      ? {
+          transportOptions: {
+            host: process.env.SMTP_HOST,
+            port: parseInt(process.env.SMTP_PORT || '587'),
+            secure: process.env.SMTP_SECURE === 'true',
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS,
+            },
+          },
+        }
+      : {}),
   }),
   collections,
   globals,

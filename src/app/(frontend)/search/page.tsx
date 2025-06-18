@@ -4,10 +4,10 @@ import { getCategories } from '@/lib/payload'
 import Search from '@/components/Search'
 
 export const metadata: Metadata = {
-  title: 'Search | Rafey Blog',
+  title: 'Search | Rafey\'s Blog',
   description: 'Search through blog posts, categories, and pages.',
   openGraph: {
-    title: 'Search | Rafey Blog',
+    title: 'Search | Rafey\'s Blog',
     description: 'Search through blog posts, categories, and pages.',
     type: 'website',
   },
@@ -22,7 +22,7 @@ interface SearchPageProps {
 
 const SearchPage: React.FC<SearchPageProps> = async ({ searchParams }) => {
   const { q: query = '', category = '' } = searchParams
-  
+
   // Fetch categories for filter options
   const categories = await getCategories()
 
@@ -35,7 +35,7 @@ const SearchPage: React.FC<SearchPageProps> = async ({ searchParams }) => {
             Find blog posts, categories, and pages across the site.
           </p>
         </div>
-        
+
         <Search
           initialQuery={query}
           initialCategory={category}

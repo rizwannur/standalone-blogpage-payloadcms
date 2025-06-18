@@ -16,13 +16,13 @@ const features = [
     icon: Target,
     title: 'Practical Focus',
     description:
-      'No fluff, just practical tools and insights that you can immediately apply to your projects and workflow.',
+      'No fluff, just practical insights and tutorials that you can immediately apply to your projects and workflow.',
   },
   {
     icon: Lightbulb,
     title: 'Always Learning',
     description:
-      'We stay on top of the latest trends and technologies to bring you cutting-edge tools and knowledge.',
+      'We stay on top of the latest trends and technologies to bring you cutting-edge tutorials and knowledge.',
   },
 ]
 
@@ -36,7 +36,7 @@ export function About() {
             <h2 className="text-3xl md:text-4xl font-bold mb-6">About UI Surgeon</h2>
             <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
               UI Surgeon is your go-to resource for everything related to user interface design and
-              development. We provide practical tools, in-depth tutorials, and valuable insights to
+              development. We provide practical tutorials, in-depth guides, and valuable insights to
               help you create better user experiences.
             </p>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -87,7 +87,7 @@ export function About() {
               <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
                 50+
               </div>
-              <div className="text-muted-foreground">Free Tools</div>
+              <div className="text-muted-foreground">Articles</div>
             </div>
             <div>
               <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">

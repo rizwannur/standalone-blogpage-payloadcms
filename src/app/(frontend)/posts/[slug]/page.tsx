@@ -169,41 +169,91 @@ export default async function PostPage({ params }: PageProps) {
         </div>
 
         {/* Author info */}
-        <Card className="mb-12">
-          <CardContent className="pt-6">
-            <div className="flex items-start space-x-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                {post.authors && post.authors.length > 0
-                  ? typeof post.authors[0] === 'string'
-                    ? post.authors[0].charAt(0).toUpperCase()
-                    : post.authors[0]?.name?.charAt(0).toUpperCase() || 'A'
-                  : 'A'}
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">
-                  {post.authors && post.authors.length > 0
-                    ? typeof post.authors[0] === 'string'
+        {post.authors && post.authors.length > 0 && (
+          <Card className="mb-12">
+            <CardContent className="pt-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+                  {typeof post.authors[0] !== 'string' && post.authors[0]?.avatar ? (
+                    <img
+                      src={typeof post.authors[0].avatar === 'string' ? post.authors[0].avatar : post.authors[0].avatar?.url || ''}
+                      alt={post.authors[0]?.name || 'Author'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    (typeof post.authors[0] === 'string'
+                      ? post.authors[0].charAt(0).toUpperCase()
+                      : post.authors[0]?.name?.charAt(0).toUpperCase() || 'A')
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg mb-2">
+                    {typeof post.authors[0] === 'string'
                       ? post.authors[0]
-                      : post.authors[0]?.name || 'Anonymous'
-                    : 'Anonymous'}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  UI/UX Designer and Frontend Developer passionate about creating beautiful,
-                  functional, and accessible digital experiences. Sharing insights and tutorials to
-                  help the design and development community grow.
-                </p>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/about">Learn More</Link>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/contact">Get in Touch</Link>
-                  </Button>
+                      : post.authors[0]?.name || 'Anonymous'}
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    {typeof post.authors[0] !== 'string' && post.authors[0]?.bio
+                      ? post.authors[0].bio
+                      : 'Passionate writer sharing insights and knowledge with the community.'}
+                  </p>
+                  {typeof post.authors[0] !== 'string' && post.authors[0]?.socialLinks && (
+                    <div className="flex space-x-2">
+                      {post.authors[0].socialLinks.twitter && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={post.authors[0].socialLinks.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Twitter"
+                          >
+                            Twitter
+                          </a>
+                        </Button>
+                      )}
+                      {post.authors[0].socialLinks.linkedin && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={post.authors[0].socialLinks.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="LinkedIn"
+                          >
+                            LinkedIn
+                          </a>
+                        </Button>
+                      )}
+                      {post.authors[0].socialLinks.github && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={post.authors[0].socialLinks.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="GitHub"
+                          >
+                            GitHub
+                          </a>
+                        </Button>
+                      )}
+                      {post.authors[0].socialLinks.website && (
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={post.authors[0].socialLinks.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Website"
+                          >
+                            Website
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Comments Section */}
         <div className="max-w-4xl mx-auto mb-12">

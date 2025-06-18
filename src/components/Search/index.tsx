@@ -31,7 +31,10 @@ const formatDate = (dateString: string): string => {
 }
 
 // Simple debounce function
-const debounce = <T extends (...args: any[]) => any>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
+const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  wait: number,
+): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout
   return function executedFunction(...args: Parameters<T>) {
     const later = () => {
@@ -87,7 +90,7 @@ const SearchResultItem: React.FC<{
         </mark>
       ) : (
         part
-      )
+      ),
     )
   }
 
@@ -157,36 +160,39 @@ const SearchResultItem: React.FC<{
                 <p className="text-sm text-muted-foreground line-clamp-2">
                   {highlightText(
                     itemMeta?.description || actualItem.excerpt || actualItem.description,
-                    query
+                    query,
                   )}
                 </p>
               )}
             </Link>
-            {(type === 'post' || type === 'search') && actualItem.authors && actualItem.authors.length > 0 && (
-              <div className="flex items-center mt-2 text-xs text-muted-foreground">
-                <User className="h-3 w-3 mr-1" />
-                {actualItem.authors.map((author: any, index: number) => (
-                  <span key={author.id}>
-                    {author.name}
-                    {index < actualItem.authors.length - 1 && ', '}
-                  </span>
-                ))}
-              </div>
-            )}
-            {(type === 'post' || type === 'search') && (actualItem.categories || item.categories) && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {(actualItem.categories || item.categories)?.slice(0, 3).map((category: any) => (
-                  <Badge key={category.id} variant="secondary" className="text-xs">
-                    {category.title}
-                  </Badge>
-                ))}
-                {(actualItem.categories || item.categories)?.length > 3 && (
-                  <Badge variant="secondary" className="text-xs">
-                    +{(actualItem.categories || item.categories).length - 3} more
-                  </Badge>
-                )}
-              </div>
-            )}
+            {(type === 'post' || type === 'search') &&
+              actualItem.authors &&
+              actualItem.authors.length > 0 && (
+                <div className="flex items-center mt-2 text-xs text-muted-foreground">
+                  <User className="h-3 w-3 mr-1" />
+                  {actualItem.authors.map((author: any, index: number) => (
+                    <span key={author.id}>
+                      {author.name}
+                      {index < actualItem.authors.length - 1 && ', '}
+                    </span>
+                  ))}
+                </div>
+              )}
+            {(type === 'post' || type === 'search') &&
+              (actualItem.categories || item.categories) && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {(actualItem.categories || item.categories)?.slice(0, 3).map((category: any) => (
+                    <Badge key={category.id} variant="secondary" className="text-xs">
+                      {category.title}
+                    </Badge>
+                  ))}
+                  {(actualItem.categories || item.categories)?.length > 3 && (
+                    <Badge variant="secondary" className="text-xs">
+                      +{(actualItem.categories || item.categories).length - 3} more
+                    </Badge>
+                  )}
+                </div>
+              )}
           </div>
         </div>
       </CardContent>
@@ -242,7 +248,7 @@ export const Search: React.FC<SearchProps> = ({
         setLoading(false)
       }
     },
-    [sortBy]
+    [sortBy],
   )
 
   const debouncedSearch = useCallback(
@@ -250,14 +256,14 @@ export const Search: React.FC<SearchProps> = ({
       performSearch(searchQuery, category, 1)
       setPage(1)
     }, 300),
-    [performSearch]
+    [performSearch],
   )
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     performSearch(query, selectedCategory, 1)
     setPage(1)
-    
+
     // Update URL
     const params = new URLSearchParams()
     if (query.trim()) params.append('q', query.trim())
@@ -280,10 +286,10 @@ export const Search: React.FC<SearchProps> = ({
   useEffect(() => {
     const queryParam = searchParams.get('q') || ''
     const categoryParam = searchParams.get('category') || ''
-    
+
     setQuery(queryParam)
     setSelectedCategory(categoryParam)
-    
+
     if (queryParam || categoryParam) {
       performSearch(queryParam, categoryParam, 1)
     }
@@ -377,9 +383,7 @@ export const Search: React.FC<SearchProps> = ({
                 {showAdvanced && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        Category
-                      </label>
+                      <label className="text-sm font-medium mb-2 block">Category</label>
                       <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
@@ -394,9 +398,7 @@ export const Search: React.FC<SearchProps> = ({
                       </select>
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        Sort By
-                      </label>
+                      <label className="text-sm font-medium mb-2 block">Sort By</label>
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
@@ -438,9 +440,7 @@ export const Search: React.FC<SearchProps> = ({
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">
-                    Search Results ({results.totalResults})
-                  </h2>
+                  <h2 className="text-lg font-semibold">Search Results ({results.totalResults})</h2>
                   {results.query && (
                     <p className="text-sm text-muted-foreground">
                       Showing results for &quot;{results.query}&quot;
@@ -465,15 +465,10 @@ export const Search: React.FC<SearchProps> = ({
               </h3>
               <div className="space-y-4">
                 {results.posts.docs.map((post) => (
-                  <SearchResultItem
-                    key={post.id}
-                    item={post}
-                    type="post"
-                    query={results.query}
-                  />
+                  <SearchResultItem key={post.id} item={post} type="post" query={results.query} />
                 ))}
               </div>
-              
+
               {/* Pagination */}
               {results.posts.totalPages > 1 && (
                 <div className="flex justify-center space-x-2">
@@ -530,12 +525,7 @@ export const Search: React.FC<SearchProps> = ({
               </h3>
               <div className="space-y-4">
                 {results.pages.docs.map((page) => (
-                  <SearchResultItem
-                    key={page.id}
-                    item={page}
-                    type="page"
-                    query={results.query}
-                  />
+                  <SearchResultItem key={page.id} item={page} type="page" query={results.query} />
                 ))}
               </div>
             </div>

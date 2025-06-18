@@ -4,12 +4,12 @@ import config from '@payload-config'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const payload = await getPayload({ config })
     const data = await request.json()
-    const { id } = params
+    const { id } = await params
 
     // Get the current user from the request
     const { user } = await payload.auth({ headers: request.headers })
@@ -51,11 +51,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const payload = await getPayload({ config })
-    const { id } = params
+    const { id } = await params
 
     // Get the current user from the request
     const { user } = await payload.auth({ headers: request.headers })

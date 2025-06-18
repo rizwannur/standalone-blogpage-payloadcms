@@ -69,7 +69,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
             compact={true}
           />
         </div>
-        
+
         {/* Category Filters */}
         <div className="flex flex-wrap justify-center gap-2 mt-6">
           <Link href="/posts">

@@ -66,7 +66,7 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
 
   const handleSave = async () => {
     setLoading(true)
-    
+
     try {
       const updateData = {
         title: formData.title,
@@ -76,9 +76,10 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
           description: formData.description,
         },
         _status: formData.status,
-        ...(collection === 'posts' && formData.publishedAt && {
-          publishedAt: formData.publishedAt,
-        }),
+        ...(collection === 'posts' &&
+          formData.publishedAt && {
+            publishedAt: formData.publishedAt,
+          }),
       }
 
       const response = await fetch(`/api/${collection}/${doc.id}`, {
@@ -110,7 +111,7 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
-    setFormData(prev => ({ ...prev, slug }))
+    setFormData((prev) => ({ ...prev, slug }))
   }
 
   return (
@@ -122,7 +123,7 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
             Make quick changes to this {collection.slice(0, -1)} without leaving the page.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {/* Title */}
           <div className="space-y-2">
@@ -130,7 +131,7 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
               placeholder="Enter title..."
             />
           </div>
@@ -152,7 +153,7 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
             <Input
               id="slug"
               value={formData.slug}
-              onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
               placeholder="enter-slug-here"
             />
           </div>
@@ -163,7 +164,7 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Enter meta description..."
               rows={3}
             />
@@ -174,7 +175,9 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
             <Label htmlFor="status">Status</Label>
             <Select
               value={formData.status}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as 'draft' | 'published' }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, status: value as 'draft' | 'published' }))
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -193,8 +196,12 @@ export const QuickEditModal: React.FC<QuickEditModalProps> = ({
               <Input
                 id="publishedAt"
                 type="datetime-local"
-                value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, publishedAt: e.target.value }))}
+                value={
+                  formData.publishedAt
+                    ? new Date(formData.publishedAt).toISOString().slice(0, 16)
+                    : ''
+                }
+                onChange={(e) => setFormData((prev) => ({ ...prev, publishedAt: e.target.value }))}
               />
             </div>
           )}

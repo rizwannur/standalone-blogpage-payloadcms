@@ -99,8 +99,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
 
   useEffect(() => {
     if (user) {
-      setProfileData((prev) => ({
-        ...prev,
+      const userData = {
         id: user.id,
         email: user.email,
         name: user.name || '',
@@ -114,11 +113,20 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
           newsletterSubscription: user.preferences?.newsletterSubscription || false,
         },
         socialLinks: user.socialLinks || {},
-      }))
+        stats: {
+          postsCount: 0,
+          commentsCount: 0,
+          likesReceived: 0,
+        },
+      }
+      setProfileData(userData)
+      setFormData(userData)
     }
   }, [user])
 
   const [formData, setFormData] = useState<Partial<UserProfileData>>({})
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'preferences'>('profile')
 
   useEffect(() => {
@@ -144,23 +152,71 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
     }))
   }
 
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setAvatarFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setAvatarPreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleSave = async () => {
     if (!profileData) return
 
     setLoading(true)
     try {
+      let avatarId = formData.avatar
+
+      // Upload avatar if a new file is selected
+      if (avatarFile) {
+        const formDataUpload = new FormData()
+        formDataUpload.append('file', avatarFile)
+
+        const uploadResponse = await fetch('/api/media', {
+          method: 'POST',
+          body: formDataUpload,
+        })
+
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json()
+          avatarId = uploadResult.doc.id
+        } else {
+          toast.error('Failed to upload avatar')
+          return
+        }
+      }
+
+      const updateData = {
+        ...formData,
+        ...(avatarId && { avatar: avatarId }),
+      }
+
       const response = await fetch('/api/users/profile', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updateData),
       })
 
       if (response.ok) {
         const updatedUser = await response.json()
-        setProfileData(updatedUser)
+        const userData = {
+          ...updatedUser,
+          avatar:
+            typeof updatedUser.avatar === 'string'
+              ? updatedUser.avatar
+              : (updatedUser.avatar as Media)?.url || '',
+        }
+        setProfileData(userData)
+        setFormData(userData)
         setIsEditing(false)
+        setAvatarFile(null)
+        setAvatarPreview(null)
         await refreshUser()
         toast.success('Profile updated successfully!')
       } else {
@@ -178,6 +234,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
   const handleCancel = () => {
     setFormData(profileData || {})
     setIsEditing(false)
+    setAvatarFile(null)
+    setAvatarPreview(null)
   }
 
   // Format date utility
@@ -188,8 +246,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
       day: 'numeric',
     })
   }
-
-
 
   if (authLoading) {
     return (
@@ -263,7 +319,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
           <div className="flex items-start space-x-6">
             <div className="relative">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={profileData.avatar} alt={profileData.name} />
+                <AvatarImage src={avatarPreview || profileData.avatar} alt={profileData.name} />
                 <AvatarFallback className="text-2xl">
                   {profileData.name
                     ? profileData.name
@@ -271,17 +327,30 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
                         .map((n) => n[0])
                         .join('')
                         .toUpperCase()
-                    : profileData.email ? profileData.email[0].toUpperCase() : 'U'}
+                    : profileData.email
+                      ? profileData.email[0].toUpperCase()
+                      : 'U'}
                 </AvatarFallback>
               </Avatar>
               {isEditing && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="absolute -bottom-2 -right-2 h-8 w-8 p-0"
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                    id="avatar-upload"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute -bottom-2 -right-2 h-8 w-8 p-0"
+                    onClick={() => document.getElementById('avatar-upload')?.click()}
+                    type="button"
+                  >
+                    <Camera className="h-4 w-4" />
+                  </Button>
+                </>
               )}
             </div>
             <div className="flex-1">
@@ -290,12 +359,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ showEditButton = true, compac
                   <h1 className="text-2xl font-bold">{profileData.name || 'Anonymous User'}</h1>
                   <div className="flex items-center space-x-2 mt-1">
                     <Badge variant="secondary">
-                       <span className="capitalize">{profileData.role}</span>
-                     </Badge>
-                     <Badge variant="outline" className="text-green-600 border-green-600">
-                       <CheckCircle className="h-3 w-3 mr-1" />
-                       Active
-                     </Badge>
+                      <span className="capitalize">{profileData.role}</span>
+                    </Badge>
+                    <Badge variant="outline" className="text-green-600 border-green-600">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Active
+                    </Badge>
                   </div>
                 </div>
                 {showEditButton && (

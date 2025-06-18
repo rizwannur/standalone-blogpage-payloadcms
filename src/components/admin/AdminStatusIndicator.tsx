@@ -52,24 +52,27 @@ export const AdminStatusIndicator: React.FC<AdminStatusIndicatorProps> = ({ doc,
             <span>Published {new Date(publishedAt).toLocaleDateString()}</span>
           </div>
         )}
-        
+
         {updatedAt && (
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
             <span>Updated {new Date(updatedAt).toLocaleDateString()}</span>
           </div>
         )}
-        
+
         {authors && Array.isArray(authors) && authors.length > 0 && (
           <div className="flex items-center gap-1">
             <User className="h-3 w-3" />
             <span>
-              {authors.map((author, index) => {
-                const authorName = typeof author === 'object' && author !== null 
-                  ? author.name || author.email 
-                  : 'Unknown'
-                return index === 0 ? authorName : `, ${authorName}`
-              }).join('')}
+              {authors
+                .map((author, index) => {
+                  const authorName =
+                    typeof author === 'object' && author !== null
+                      ? author.name || author.email
+                      : 'Unknown'
+                  return index === 0 ? authorName : `, ${authorName}`
+                })
+                .join('')}
             </span>
           </div>
         )}

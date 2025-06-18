@@ -7,25 +7,28 @@ import { adminOnly } from '../../access/adminOnly'
 export const Comments: CollectionConfig = {
   slug: 'comments',
   access: {
-    create: anyone, // Allow anonymous comments
-    delete: adminOnly, // Only admin can delete comments
-    read: ({ req: { user } }) => {
-      // Admin can see all comments, others can only see approved comments
+    create: anyone, // Allow anonymous comments and authenticated users
+    delete: ({ req: { user } }) => {
+      // Admin can delete any comment, readers can delete their own
       if (user?.role === 'admin') {
         return true
       }
-      return {
-        status: {
-          equals: 'approved',
-        },
+      if (user?.role === 'reader') {
+        return {
+          author: {
+            equals: user.id,
+          },
+        }
       }
+      return false
     },
+    read: () => true, // All comments are visible (no approval workflow)
     update: ({ req: { user } }) => {
-      // Admin can update any comment, users can update their own
+      // Admin can update any comment, readers can update their own
       if (user?.role === 'admin') {
         return true
       }
-      if (user) {
+      if (user?.role === 'reader') {
         return {
           author: {
             equals: user.id,
@@ -126,12 +129,8 @@ export const Comments: CollectionConfig = {
       name: 'status',
       type: 'select',
       required: true,
-      defaultValue: 'pending',
+      defaultValue: 'approved',
       options: [
-        {
-          label: 'Pending',
-          value: 'pending',
-        },
         {
           label: 'Approved',
           value: 'approved',
@@ -147,7 +146,7 @@ export const Comments: CollectionConfig = {
       ],
       admin: {
         position: 'sidebar',
-        description: 'Comment moderation status',
+        description: 'Comment moderation status (admin only)',
       },
       access: {
         update: ({ req: { user } }) => {
@@ -216,8 +215,8 @@ export const Comments: CollectionConfig = {
           data.userAgent = req.headers.get('user-agent') || 'unknown'
         }
 
-        // Auto-approve comments from authenticated users with good standing
-        if (data.author && !data.id) {
+        // Auto-approve all comments (no approval workflow)
+        if (!data.id) {
           data.status = 'approved'
         }
 

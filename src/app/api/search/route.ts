@@ -1,82 +1,110 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { emailService } from '@/client/utilities/emailService'
 
 export async function GET(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
     const { searchParams } = new URL(request.url)
-    
+
     const query = searchParams.get('q')
     const category = searchParams.get('category')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
-    
+
     if (!query && !category) {
-      return NextResponse.json(
-        { error: 'Search query or category is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Search query or category is required' }, { status: 400 })
     }
 
-    let searchResults: any = { docs: [], totalDocs: 0, page: 1, totalPages: 1 }
-    let categories: any = { docs: [], totalDocs: 0 }
-    let pages: any = { docs: [], totalDocs: 0 }
+    // Track search analytics
+    if (query) {
+      try {
+        await payload.create({
+          collection: 'analytics',
+          data: {
+            type: 'search',
+            searchQuery: query,
+            category: category || null,
+            date: new Date().toISOString(),
+            // IP and userAgent will be auto-populated by the beforeChange hook
+          },
+        })
+      } catch (analyticsError) {
+        console.error('Failed to track search analytics:', analyticsError)
+      }
+    }
 
-    // Use Payload's search plugin for posts
+    // Search directly in posts collection
     if (query) {
       const searchWhere: any = {
-        title: {
-          contains: query,
+        _status: {
+          equals: 'published',
         },
+        or: [
+          {
+            title: {
+              contains: query,
+            },
+          },
+          {
+            content: {
+              contains: query,
+            },
+          },
+        ],
       }
 
-      // Add category filter to search if specified
+      // Add category filter if specified
       if (category) {
-        searchWhere['categories.categoryID'] = {
+        searchWhere['categories.value'] = {
           equals: category,
         }
       }
 
-      const searchResponse = await payload.find({
-        collection: 'search',
+      const posts = await payload.find({
+        collection: 'posts',
         where: searchWhere,
         page,
         limit,
+        sort: '-publishedAt',
         depth: 2,
       })
 
-      searchResults = {
-        docs: searchResponse.docs,
-        totalDocs: searchResponse.totalDocs,
-        page: searchResponse.page,
-        totalPages: searchResponse.totalPages,
+      // Transform posts to match SearchBar expected format
+      const results = posts.docs.map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        category: post.categories?.[0]?.title || '',
+        publishedAt: post.publishedAt || post.createdAt,
+      }))
+
+      // Send email notification for no results to help improve content
+      if (posts.totalDocs === 0 && query) {
+        try {
+          const settings = await payload.findGlobal({
+            slug: 'settings',
+          })
+
+          if (settings.adminEmail) {
+            await emailService.sendSearchNotification(
+              settings.adminEmail,
+              query,
+              category || 'All categories',
+              0,
+            )
+          }
+        } catch (emailError) {
+          console.error('Failed to send search notification email:', emailError)
+        }
       }
 
-      // Also search categories
-      categories = await payload.find({
-        collection: 'categories',
-        where: {
-          title: {
-            contains: query,
-          },
-        },
-        limit: 5,
-      })
-
-      // Search pages
-      pages = await payload.find({
-        collection: 'pages',
-        where: {
-          _status: {
-            equals: 'published',
-          },
-          title: {
-            contains: query,
-          },
-        },
-        limit: 5,
-        depth: 1,
+      return NextResponse.json({
+        results,
+        total: posts.totalDocs,
+        page: posts.page,
+        totalPages: posts.totalPages,
       })
     } else if (category) {
       // If only category filter, search directly in posts
@@ -96,37 +124,31 @@ export async function GET(request: NextRequest) {
         depth: 2,
       })
 
-      // Transform posts to match search result format
-      searchResults = {
-        docs: posts.docs.map(post => ({
-          doc: {
-            relationTo: 'posts',
-            value: post,
-          },
-          title: post.title,
-          slug: post.slug,
-          meta: post.meta,
-          categories: post.categories,
-        })),
-        totalDocs: posts.totalDocs,
+      // Transform posts to match SearchBar expected format
+      const results = posts.docs.map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        category: post.categories?.[0]?.title || '',
+        publishedAt: post.publishedAt || post.createdAt,
+      }))
+
+      return NextResponse.json({
+        results,
+        total: posts.totalDocs,
         page: posts.page,
         totalPages: posts.totalPages,
-      }
+      })
     }
 
     return NextResponse.json({
-      posts: searchResults,
-      categories,
-      pages,
-      query,
-      category,
-      totalResults: searchResults.totalDocs + categories.totalDocs + pages.totalDocs,
+      results: [],
+      total: 0,
+      page: 1,
+      totalPages: 1,
     })
   } catch (error) {
     console.error('Search error:', error)
-    return NextResponse.json(
-      { error: 'Search failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Search failed' }, { status: 500 })
   }
 }

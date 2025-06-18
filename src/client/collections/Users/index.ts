@@ -7,7 +7,7 @@ export const Users: CollectionConfig = {
   slug: 'users',
   access: {
     admin: authenticated,
-    create: adminOnly, // Only admin can create new users
+    create: () => true, // Allow public user creation for signup
     delete: adminOnly, // Only admin can delete users
     read: authenticated,
     update: ({ req: { user } }) => {
@@ -52,10 +52,17 @@ export const Users: CollectionConfig = {
           label: 'Blogger',
           value: 'blogger',
         },
+        {
+          label: 'Reader',
+          value: 'reader',
+        },
       ],
       access: {
-        create: ({ req: { user } }) => {
-          return !!(user && user.role === 'admin')
+        create: ({ req: { user }, data }) => {
+          // Allow setting role during signup (when no user is authenticated)
+          // or when admin is creating users
+          if (!user) return data?.role === 'blogger' // Only allow blogger role for public signup
+          return user.role === 'admin'
         },
         read: ({ req }) => {
           if (!req.user) return false
@@ -95,6 +102,19 @@ export const Users: CollectionConfig = {
       name: 'bio',
       type: 'textarea',
       maxLength: 500,
+      access: {
+        create: ({ req: { user } }) => {
+          return !!(
+            user &&
+            (user.role === 'admin' || user.role === 'reader' || user.role === 'blogger')
+          )
+        },
+        read: () => true, // Bio is public
+        update: ({ req: { user } }) => {
+          if (!user) return false
+          return user.role === 'admin' || user.role === 'reader' || user.role === 'blogger'
+        },
+      },
       admin: {
         description: 'Brief biography for author profile',
       },
@@ -103,6 +123,21 @@ export const Users: CollectionConfig = {
       name: 'avatar',
       type: 'upload',
       relationTo: 'media',
+      access: {
+        create: ({ req: { user } }) => {
+          // Users can set avatar during profile creation, admins can set for anyone
+          return !!(
+            user &&
+            (user.role === 'admin' || user.role === 'reader' || user.role === 'blogger')
+          )
+        },
+        read: () => true, // Avatar is public
+        update: ({ req: { user } }) => {
+          // Users can update their own avatar, admin can update anyone's
+          if (!user) return false
+          return user.role === 'admin' || user.role === 'reader' || user.role === 'blogger'
+        },
+      },
       admin: {
         description: 'Profile picture',
       },
@@ -110,6 +145,19 @@ export const Users: CollectionConfig = {
     {
       name: 'socialLinks',
       type: 'group',
+      access: {
+        create: ({ req: { user } }) => {
+          return !!(
+            user &&
+            (user.role === 'admin' || user.role === 'reader' || user.role === 'blogger')
+          )
+        },
+        read: () => true, // Social links are public
+        update: ({ req: { user } }) => {
+          if (!user) return false
+          return user.role === 'admin' || user.role === 'reader' || user.role === 'blogger'
+        },
+      },
       fields: [
         {
           name: 'twitter',

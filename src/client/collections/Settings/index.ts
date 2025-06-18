@@ -277,6 +277,13 @@ export const Settings: GlobalConfig = {
                 description: 'Default "from" name',
               },
             },
+            {
+              name: 'adminEmail',
+              type: 'email',
+              admin: {
+                description: 'Admin email address for notifications',
+              },
+            },
           ],
         },
         {

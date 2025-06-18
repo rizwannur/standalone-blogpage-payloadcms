@@ -96,6 +96,22 @@ export const Analytics: CollectionConfig = {
       },
     },
     {
+      name: 'searchQuery',
+      type: 'text',
+      admin: {
+        description: 'Search query text (for search events)',
+        condition: (data) => data.type === 'search',
+      },
+    },
+    {
+      name: 'category',
+      type: 'text',
+      admin: {
+        description: 'Category filter used in search (for search events)',
+        condition: (data) => data.type === 'search',
+      },
+    },
+    {
       name: 'sessionId',
       type: 'text',
       admin: {
