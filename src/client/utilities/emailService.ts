@@ -42,15 +42,15 @@ class EmailService {
       },
     })
 
-    // Verify connection
+    // Verify connection (optional - don't throw errors during development)
     try {
       if (this.transporter) {
         await this.transporter.verify()
         console.log('Email service initialized successfully')
       }
     } catch (error) {
-      console.error('Email service initialization failed:', error)
-      throw error
+      console.warn('Email service verification failed (this is expected during development without proper SMTP config):', error instanceof Error ? error.message : String(error))
+      // Don't throw error - allow app to continue without email functionality
     }
   }
 

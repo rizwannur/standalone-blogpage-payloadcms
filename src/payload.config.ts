@@ -50,12 +50,12 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  email: nodemailerAdapter({
-    defaultFromAddress: process.env.FROM_EMAIL || 'noreply@localhost',
-    defaultFromName: process.env.FROM_NAME || 'Rafey Blog',
-    // If SMTP credentials are not provided, use ethereal.email for development
-    ...(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
-      ? {
+  // Only configure email if SMTP credentials are provided
+  ...(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
+    ? {
+        email: nodemailerAdapter({
+          defaultFromAddress: process.env.FROM_EMAIL || 'noreply@localhost',
+          defaultFromName: process.env.FROM_NAME || 'Rafey Blog',
           transportOptions: {
             host: process.env.SMTP_HOST,
             port: parseInt(process.env.SMTP_PORT || '587'),
@@ -65,9 +65,9 @@ export default buildConfig({
               pass: process.env.SMTP_PASS,
             },
           },
-        }
-      : {}),
-  }),
+        }),
+      }
+    : {}),
   collections,
   globals,
   cors: [getServerSideURL()].filter(Boolean),
