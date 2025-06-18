@@ -11,8 +11,6 @@ import { Media } from './client/collections/Media'
 import { Pages } from './client/collections/Pages'
 import { Posts } from './client/collections/Posts'
 import { Users } from './client/collections/Users'
-import { Footer } from './client/Footer/config'
-import { Header } from './client/Header/config'
 import { plugins } from './client/plugins'
 import { defaultLexical } from '@/client/fields/defaultLexical'
 import { getServerSideURL } from './client/utilities/getURL'
@@ -56,7 +54,6 @@ export default buildConfig({
   }),
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer],
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { StateField } from '@payloadcms/plugin-form-builder/types'
 import type { Control, FieldErrorsImpl } from 'react-hook-form'
 
-import { Label } from '@/client/components/ui/label'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/client/components/ui/select'
+} from '@/components/ui/select'
 import React from 'react'
 import { Controller } from 'react-hook-form'
 
@@ -40,7 +41,7 @@ export const State: React.FC<
           const controlledValue = stateOptions.find((t) => t.value === value)
 
           return (
-            <Select onValueChange={(val) => onChange(val)} value={controlledValue?.value}>
+            <Select onValueChange={(val: any) => onChange(val)} value={controlledValue?.value}>
               <SelectTrigger className="w-full" id={name}>
                 <SelectValue placeholder={label} />
               </SelectTrigger>
