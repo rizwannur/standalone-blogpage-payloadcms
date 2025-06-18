@@ -6,11 +6,8 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
-import { Categories } from './client/collections/Categories'
-import { Media } from './client/collections/Media'
-import { Pages } from './client/collections/Pages'
-import { Posts } from './client/collections/Posts'
-import { Users } from './client/collections/Users'
+import { collections } from './client/collections'
+import { globals } from './client/globals'
 import { plugins } from './client/plugins'
 import { defaultLexical } from '@/client/fields/defaultLexical'
 import { getServerSideURL } from './client/utilities/getURL'
@@ -23,7 +20,7 @@ export default buildConfig({
     importMap: {
       baseDir: `${dirname}`,
     },
-    user: Users.slug,
+    user: 'users',
     livePreview: {
       breakpoints: [
         {
@@ -52,7 +49,8 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections,
+  globals,
   cors: [getServerSideURL()].filter(Boolean),
   plugins: [
     ...plugins,

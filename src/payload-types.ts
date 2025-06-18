@@ -67,11 +67,15 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    categories: Category;
+    media: Media;
     pages: Page;
     posts: Post;
-    media: Media;
-    categories: Category;
     users: User;
+    tags: Tag;
+    comments: Comment;
+    newsletter: Newsletter;
+    analytics: Analytics;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -83,11 +87,15 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
+    comments: CommentsSelect<false> | CommentsSelect<true>;
+    newsletter: NewsletterSelect<false> | NewsletterSelect<true>;
+    analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -100,8 +108,12 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    settings: Setting;
+  };
+  globalsSelect: {
+    settings: SettingsSelect<false> | SettingsSelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -133,6 +145,169 @@ export interface UserAuthOperations {
   unlock: {
     email: string;
     password: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: string;
+  /**
+   * Category name (e.g., "Technology", "Tutorials")
+   */
+  title: string;
+  /**
+   * Detailed description of this category
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Category featured image
+   */
+  image?: (string | null) | Media;
+  /**
+   * Hex color code for category theming (e.g., #3B82F6)
+   */
+  color?: string | null;
+  /**
+   * Number of published posts in this category (auto-calculated)
+   */
+  postCount?: number | null;
+  /**
+   * Featured categories appear prominently on the homepage
+   */
+  featured?: boolean | null;
+  /**
+   * Parent category for hierarchical organization
+   */
+  parent?: (string | null) | Category;
+  seo?: {
+    /**
+     * Custom meta title for SEO (defaults to category title)
+     */
+    metaTitle?: string | null;
+    /**
+     * Meta description for search engines
+     */
+    metaDescription?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | Category;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: string;
+  alt?: string | null;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    square?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    small?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    medium?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    large?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    xlarge?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    og?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
   };
 }
 /**
@@ -255,124 +430,43 @@ export interface Post {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: string;
-  alt?: string | null;
-  caption?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    square?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    small?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    medium?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    large?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    xlarge?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    og?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: string;
-  title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  parent?: (string | null) | Category;
-  breadcrumbs?:
-    | {
-        doc?: (string | null) | Category;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: string;
-  name?: string | null;
+  name: string;
+  /**
+   * User role determines access permissions
+   */
+  role: 'admin' | 'blogger';
+  /**
+   * Inactive users cannot log in
+   */
+  isActive?: boolean | null;
+  /**
+   * Brief biography for author profile
+   */
+  bio?: string | null;
+  /**
+   * Profile picture
+   */
+  avatar?: (string | null) | Media;
+  socialLinks?: {
+    twitter?: string | null;
+    linkedin?: string | null;
+    github?: string | null;
+    website?: string | null;
+  };
+  preferences?: {
+    /**
+     * Receive email notifications for comments and mentions
+     */
+    emailNotifications?: boolean | null;
+    /**
+     * Subscribe to newsletter updates
+     */
+    newsletterSubscription?: boolean | null;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -680,6 +774,231 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  /**
+   * Tag name (e.g., "JavaScript", "Tutorial")
+   */
+  name: string;
+  /**
+   * Brief description of what this tag represents
+   */
+  description?: string | null;
+  /**
+   * Color theme for the tag display
+   */
+  color?: ('blue' | 'green' | 'red' | 'yellow' | 'purple' | 'pink' | 'indigo' | 'gray') | null;
+  /**
+   * Number of posts using this tag (auto-calculated)
+   */
+  postCount?: number | null;
+  /**
+   * Featured tags appear prominently in tag clouds
+   */
+  featured?: boolean | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments".
+ */
+export interface Comment {
+  id: string;
+  /**
+   * Comment content (max 1000 characters)
+   */
+  content: string;
+  post: string | Post;
+  author?: (string | null) | User;
+  /**
+   * Name for anonymous commenters
+   */
+  authorName?: string | null;
+  /**
+   * Email for anonymous commenters (not displayed publicly)
+   */
+  authorEmail?: string | null;
+  /**
+   * Website URL for anonymous commenters (optional)
+   */
+  authorWebsite?: string | null;
+  /**
+   * Parent comment for threaded discussions
+   */
+  parentComment?: (string | null) | Comment;
+  /**
+   * Comment moderation status
+   */
+  status: 'pending' | 'approved' | 'rejected' | 'spam';
+  /**
+   * IP address of the commenter
+   */
+  ipAddress?: string | null;
+  /**
+   * Browser user agent
+   */
+  userAgent?: string | null;
+  /**
+   * Number of likes received
+   */
+  likes?: number | null;
+  /**
+   * Number of replies to this comment
+   */
+  replies?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter".
+ */
+export interface Newsletter {
+  id: string;
+  /**
+   * Subscriber email address
+   */
+  email: string;
+  /**
+   * Associated user account (if any)
+   */
+  user?: (string | null) | User;
+  /**
+   * Subscriber first name (optional)
+   */
+  firstName?: string | null;
+  /**
+   * Subscriber last name (optional)
+   */
+  lastName?: string | null;
+  /**
+   * Subscription status
+   */
+  status: 'subscribed' | 'unsubscribed' | 'bounced' | 'complained';
+  /**
+   * How the subscriber was acquired
+   */
+  source?: ('website' | 'blog_post' | 'social_media' | 'manual_import' | 'api') | null;
+  preferences?: {
+    /**
+     * Preferred email frequency
+     */
+    frequency?: ('daily' | 'weekly' | 'monthly') | null;
+    /**
+     * Interested categories for targeted content
+     */
+    categories?: (string | Category)[] | null;
+    /**
+     * Preferred email format
+     */
+    format?: ('html' | 'text') | null;
+  };
+  /**
+   * Date of subscription
+   */
+  subscribedAt?: string | null;
+  /**
+   * Date of unsubscription
+   */
+  unsubscribedAt?: string | null;
+  confirmationToken?: string | null;
+  /**
+   * Email confirmation status
+   */
+  confirmed?: boolean | null;
+  /**
+   * IP address at subscription
+   */
+  ipAddress?: string | null;
+  /**
+   * Browser user agent at subscription
+   */
+  userAgent?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics".
+ */
+export interface Analytics {
+  id: string;
+  /**
+   * Type of analytics event
+   */
+  type:
+    | 'page_view'
+    | 'post_view'
+    | 'post_like'
+    | 'post_share'
+    | 'comment'
+    | 'newsletter_signup'
+    | 'search'
+    | 'download'
+    | 'external_link_click';
+  /**
+   * Related post (if applicable)
+   */
+  post?: (string | null) | Post;
+  /**
+   * User who performed the action (if logged in)
+   */
+  user?: (string | null) | User;
+  /**
+   * Numeric value for the event (e.g., reading time, download count)
+   */
+  value?: number | null;
+  /**
+   * Additional event metadata (referrer, device info, etc.)
+   */
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * User session identifier
+   */
+  sessionId?: string | null;
+  /**
+   * IP address of the user
+   */
+  ipAddress?: string | null;
+  /**
+   * Browser user agent
+   */
+  userAgent?: string | null;
+  /**
+   * Referrer URL
+   */
+  referrer?: string | null;
+  /**
+   * User country (from IP geolocation)
+   */
+  country?: string | null;
+  device?: {
+    type?: ('desktop' | 'mobile' | 'tablet') | null;
+    browser?: string | null;
+    os?: string | null;
+  };
+  /**
+   * Date and time of the event
+   */
+  date: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -852,6 +1171,14 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
+        relationTo: 'categories';
+        value: string | Category;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: string | Page;
       } | null)
@@ -860,16 +1187,24 @@ export interface PayloadLockedDocument {
         value: string | Post;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
-      } | null)
-    | ({
-        relationTo: 'categories';
-        value: string | Category;
-      } | null)
-    | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: string | Tag;
+      } | null)
+    | ({
+        relationTo: 'comments';
+        value: string | Comment;
+      } | null)
+    | ({
+        relationTo: 'newsletter';
+        value: string | Newsletter;
+      } | null)
+    | ({
+        relationTo: 'analytics';
+        value: string | Analytics;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -932,6 +1267,130 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  image?: T;
+  color?: T;
+  postCount?: T;
+  featured?: T;
+  parent?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        square?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        small?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        medium?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        xlarge?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        og?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1079,123 +1538,28 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  caption?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        square?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        small?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        medium?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        large?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        xlarge?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        og?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories_select".
- */
-export interface CategoriesSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  slugLock?: T;
-  parent?: T;
-  breadcrumbs?:
-    | T
-    | {
-        doc?: T;
-        url?: T;
-        label?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
+  isActive?: T;
+  bio?: T;
+  avatar?: T;
+  socialLinks?:
+    | T
+    | {
+        twitter?: T;
+        linkedin?: T;
+        github?: T;
+        website?: T;
+      };
+  preferences?:
+    | T
+    | {
+        emailNotifications?: T;
+        newsletterSubscription?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1205,6 +1569,94 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  color?: T;
+  postCount?: T;
+  featured?: T;
+  slug?: T;
+  slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments_select".
+ */
+export interface CommentsSelect<T extends boolean = true> {
+  content?: T;
+  post?: T;
+  author?: T;
+  authorName?: T;
+  authorEmail?: T;
+  authorWebsite?: T;
+  parentComment?: T;
+  status?: T;
+  ipAddress?: T;
+  userAgent?: T;
+  likes?: T;
+  replies?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter_select".
+ */
+export interface NewsletterSelect<T extends boolean = true> {
+  email?: T;
+  user?: T;
+  firstName?: T;
+  lastName?: T;
+  status?: T;
+  source?: T;
+  preferences?:
+    | T
+    | {
+        frequency?: T;
+        categories?: T;
+        format?: T;
+      };
+  subscribedAt?: T;
+  unsubscribedAt?: T;
+  confirmationToken?: T;
+  confirmed?: T;
+  ipAddress?: T;
+  userAgent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_select".
+ */
+export interface AnalyticsSelect<T extends boolean = true> {
+  type?: T;
+  post?: T;
+  user?: T;
+  value?: T;
+  metadata?: T;
+  sessionId?: T;
+  ipAddress?: T;
+  userAgent?: T;
+  referrer?: T;
+  country?: T;
+  device?:
+    | T
+    | {
+        type?: T;
+        browser?: T;
+        os?: T;
+      };
+  date?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1460,6 +1912,253 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: string;
+  /**
+   * The name of your blog/website
+   */
+  siteName: string;
+  /**
+   * Brief description of your blog for SEO
+   */
+  siteDescription: string;
+  /**
+   * Your website URL (used for SEO and social sharing)
+   */
+  siteUrl: string;
+  /**
+   * Site logo
+   */
+  logo?: (string | null) | Media;
+  /**
+   * Site favicon
+   */
+  favicon?: (string | null) | Media;
+  /**
+   * Default timezone for the blog
+   */
+  timezone?:
+    | (
+        | 'UTC'
+        | 'America/New_York'
+        | 'America/Chicago'
+        | 'America/Denver'
+        | 'America/Los_Angeles'
+        | 'Europe/London'
+        | 'Europe/Paris'
+        | 'Asia/Tokyo'
+        | 'Asia/Shanghai'
+        | 'Australia/Sydney'
+      )
+    | null;
+  /**
+   * Default language for the blog
+   */
+  language?: ('en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'zh' | 'ja') | null;
+  /**
+   * Number of posts to display per page
+   */
+  postsPerPage?: number | null;
+  /**
+   * Allow comments on blog posts
+   */
+  enableComments?: boolean | null;
+  /**
+   * Require admin approval for comments
+   */
+  moderateComments?: boolean | null;
+  /**
+   * Enable newsletter subscription
+   */
+  enableNewsletter?: boolean | null;
+  /**
+   * Enable search functionality
+   */
+  enableSearch?: boolean | null;
+  /**
+   * Enable analytics tracking
+   */
+  enableAnalytics?: boolean | null;
+  /**
+   * Enable social media sharing buttons
+   */
+  enableSocialSharing?: boolean | null;
+  /**
+   * Show estimated reading time for posts
+   */
+  enableReadingTime?: boolean | null;
+  /**
+   * Default image for social media sharing
+   */
+  defaultSeoImage?: (string | null) | Media;
+  /**
+   * Twitter handle (without @)
+   */
+  twitterHandle?: string | null;
+  /**
+   * Facebook App ID for Open Graph
+   */
+  facebookAppId?: string | null;
+  /**
+   * Google Analytics tracking ID
+   */
+  googleAnalyticsId?: string | null;
+  /**
+   * Google Tag Manager container ID
+   */
+  googleTagManagerId?: string | null;
+  /**
+   * Generate XML sitemap
+   */
+  enableSitemap?: boolean | null;
+  /**
+   * Generate robots.txt file
+   */
+  enableRobotsTxt?: boolean | null;
+  /**
+   * SMTP server hostname
+   */
+  smtpHost?: string | null;
+  /**
+   * SMTP server port
+   */
+  smtpPort?: number | null;
+  /**
+   * SMTP username
+   */
+  smtpUser?: string | null;
+  /**
+   * SMTP password
+   */
+  smtpPassword?: string | null;
+  /**
+   * Default "from" email address
+   */
+  fromEmail?: string | null;
+  /**
+   * Default "from" name
+   */
+  fromName?: string | null;
+  /**
+   * Social media links for the footer and author profiles
+   */
+  socialLinks?:
+    | {
+        platform:
+          | 'twitter'
+          | 'facebook'
+          | 'instagram'
+          | 'linkedin'
+          | 'youtube'
+          | 'github'
+          | 'discord'
+          | 'tiktok'
+          | 'pinterest'
+          | 'reddit';
+        /**
+         * Full URL to your social media profile
+         */
+        url: string;
+        enabled?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Enable maintenance mode (shows maintenance page to non-admin users)
+   */
+  maintenanceMode?: boolean | null;
+  /**
+   * Message to display during maintenance mode
+   */
+  maintenanceMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Custom CSS to inject into the site
+   */
+  customCss?: string | null;
+  /**
+   * Custom JavaScript to inject into the site
+   */
+  customJs?: string | null;
+  /**
+   * Enable page caching for better performance
+   */
+  enableCaching?: boolean | null;
+  /**
+   * Cache timeout in seconds
+   */
+  cacheTimeout?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  siteDescription?: T;
+  siteUrl?: T;
+  logo?: T;
+  favicon?: T;
+  timezone?: T;
+  language?: T;
+  postsPerPage?: T;
+  enableComments?: T;
+  moderateComments?: T;
+  enableNewsletter?: T;
+  enableSearch?: T;
+  enableAnalytics?: T;
+  enableSocialSharing?: T;
+  enableReadingTime?: T;
+  defaultSeoImage?: T;
+  twitterHandle?: T;
+  facebookAppId?: T;
+  googleAnalyticsId?: T;
+  googleTagManagerId?: T;
+  enableSitemap?: T;
+  enableRobotsTxt?: T;
+  smtpHost?: T;
+  smtpPort?: T;
+  smtpUser?: T;
+  smtpPassword?: T;
+  fromEmail?: T;
+  fromName?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        enabled?: T;
+        id?: T;
+      };
+  maintenanceMode?: T;
+  maintenanceMessage?: T;
+  customCss?: T;
+  customJs?: T;
+  enableCaching?: T;
+  cacheTimeout?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
