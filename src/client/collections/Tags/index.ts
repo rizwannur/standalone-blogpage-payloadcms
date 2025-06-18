@@ -7,10 +7,22 @@ import { slugField } from '../../fields/slug'
 export const Tags: CollectionConfig = {
   slug: 'tags',
   access: {
-    create: adminOrBlogger,
-    delete: adminOrBlogger,
+    create: ({ req: { user } }) => {
+      // Admin has almighty access
+      if (user?.role === 'admin') return true
+      return user?.role === 'blogger'
+    },
+    delete: ({ req: { user } }) => {
+      // Admin has almighty access
+      if (user?.role === 'admin') return true
+      return user?.role === 'blogger'
+    },
     read: anyone,
-    update: adminOrBlogger,
+    update: ({ req: { user } }) => {
+      // Admin has almighty access
+      if (user?.role === 'admin') return true
+      return user?.role === 'blogger'
+    },
   },
   admin: {
     defaultColumns: ['name', 'slug', 'color', 'postCount'],

@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-
 import {
   FixedToolbarFeature,
   InlineToolbarFeature,
@@ -10,6 +9,7 @@ import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { adminOnly } from '../access/adminOnly'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -17,10 +17,25 @@ const dirname = path.dirname(filename)
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: ({ req: { user } }) => {
+      // Admin has unrestricted access
+      if (user?.role === 'admin') return true
+      // Other authenticated users can create
+      return Boolean(user)
+    },
+    delete: ({ req: { user } }) => {
+      // Admin has unrestricted access
+      if (user?.role === 'admin') return true
+      // Other authenticated users can delete
+      return Boolean(user)
+    },
     read: anyone,
-    update: authenticated,
+    update: ({ req: { user } }) => {
+      // Admin has unrestricted access
+      if (user?.role === 'admin') return true
+      // Other authenticated users can update
+      return Boolean(user)
+    },
   },
   fields: [
     {

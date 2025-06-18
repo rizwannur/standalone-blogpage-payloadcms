@@ -17,6 +17,7 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  serverURL: getServerSideURL(),
   admin: {
     importMap: {
       baseDir: `${dirname}`,
@@ -45,6 +46,13 @@ export default buildConfig({
       ],
     },
   },
+  cookiePrefix: 'payload',
+  csrf: [
+    getServerSideURL(),
+    // Allow localhost for development
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ],
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: mongooseAdapter({

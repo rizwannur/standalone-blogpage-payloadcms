@@ -23,10 +23,27 @@ import {
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
+    create: ({ req: { user } }) => {
+      // Admin has almighty access
+      if (user?.role === 'admin') return true
+      return Boolean(user)
+    },
+    delete: ({ req: { user } }) => {
+      // Admin has almighty access
+      if (user?.role === 'admin') return true
+      return Boolean(user)
+    },
+    read: ({ req }) => {
+      // Admin has almighty access to all pages
+      if (req.user?.role === 'admin') return true
+      // Others follow published rules
+      return authenticatedOrPublished({ req })
+    },
+    update: ({ req: { user } }) => {
+      // Admin has almighty access
+      if (user?.role === 'admin') return true
+      return Boolean(user)
+    },
   },
   // This config controls what's populated by default when a page is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property

@@ -8,7 +8,9 @@ export const getServerSideURL = () => {
   }
 
   if (!url) {
-    url = 'http://localhost:3000'
+    // Check if we're in development and use the actual port
+    const port = process.env.PORT || '3000'
+    url = `http://localhost:${port}`
   }
 
   return url
